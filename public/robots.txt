@@ -1,0 +1,29 @@
+# Disallow crawling of the entire website. Keep in mind that in 
+# some situations URLs from the website may still be indexed, 
+# even if they haven't been crawled. Note: this does not match 
+# the various AdsBot crawlers, which must be named explicitly.
+# https://support.google.com/webmasters/answer/6062596?hl=en&ref_topic=6061961
+# https://support.google.com/webmasters/answer/1061943
+User-agent: *
+Disallow: /
+
+User-agent: APIs-Google
+Disallow: /
+
+User-agent: Mediapartners-Google
+Disallow: /
+
+User-agent: AdsBot-Google-Mobile
+Disallow: /
+
+User-agent: AdsBot-Google
+Disallow: /
+
+User-agent: Googlebot-News
+Disallow: /
+
+User-agent: Googlebot-Video
+Disallow: /
+
+User-agent: AdsBot-Google-Mobile-Apps
+Disallow: /

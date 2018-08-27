@@ -135,6 +135,6 @@ const initMovement = () => {
     const movement = new Movement(5000, mouseStopped, mouseStarted, scrollStarted);
 }
 
-nextImage()
-initMovement()
-grid.pulse()
+// nextImage()
+// initMovement()
+// grid.pulse()
