@@ -8,23 +8,26 @@
 User-agent: *
 Disallow: /
 
-#User-agent: APIs-Google
-#Disallow: /
+User-agent: *
+Disallow: /dashboard
 
-#User-agent: Mediapartners-Google
-#Disallow: /
+User-agent: APIs-Google
+Disallow: /dashboard
 
-#User-agent: AdsBot-Google-Mobile
-#Disallow: /
+User-agent: Mediapartners-Google
+Disallow: /dashboard
 
-#User-agent: AdsBot-Google
-#Disallow: /
+User-agent: AdsBot-Google-Mobile
+Disallow: /dashboard
 
-#User-agent: Googlebot-News
-#Disallow: /
+User-agent: AdsBot-Google
+Disallow: /dashboard
 
-#User-agent: Googlebot-Video
-#Disallow: /
+User-agent: Googlebot-News
+Disallow: /dashboard
+
+User-agent: Googlebot-Video
+Disallow: /dashboard
 
 User-agent: AdsBot-Google-Mobile-Apps
-Disallow: /
+Disallow: /dashboard

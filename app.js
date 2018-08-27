@@ -1,3 +1,4 @@
+require("dotenv").config()
 const createError = require('http-errors')
 const express = require('express')
 const path = require('path')
@@ -6,6 +7,7 @@ const logger = require('morgan')
 const sassMiddleware = require('node-sass-middleware')
 const exphbs = require('express-handlebars')
 const _ = require('lodash')
+const httpAuth = require('http-auth');
 
 const Visitors = require('./utils/visitors')
 
@@ -23,6 +25,14 @@ _.extend(app.locals, {
     debug: typeof process.env.DEBUG !== 'undefined',
   }
 })
+
+// Configure basic auth
+const basic = httpAuth.basic({
+  realm: 'Admin'
+}, function(username, password, callback) {
+  callback(username == process.env.ADMIN_UN && password == process.env.ADMIN_PW);
+});
+var authMiddleware = httpAuth.connect(basic);
 
 const hbs = exphbs.create({
   layoutsDir: 'views/layouts/',
@@ -50,7 +60,7 @@ app.use(sassMiddleware({
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/news', indexRouter)
-app.use('/dashboard', dashRouter)
+app.use('/dashboard', authMiddleware, dashRouter)
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
