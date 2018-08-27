@@ -31,6 +31,7 @@ app.engine('.hbs', hbs.engine)
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', '.hbs')
 app.set('view cache', false)
+app.disable('view cache')
 
 app.use(logger('dev'))
 app.use(express.json())
