@@ -18,6 +18,22 @@
 
     {{{body}}}
 
+
+
     <script src="{{#if site.debug}}http://localhost:8080/{{/if}}bundle.js"></script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+      var visitorData = {
+        referringSite: document.referrer,
+        page: location.pathname,
+        userAgent : navigator.userAgent,
+        vendor: navigator.vendor,
+        title : document.title
+      }
+      socket.emit('visitor-data', visitorData);
+    </script>
+
   </body>
 </html>

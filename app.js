@@ -6,12 +6,17 @@ const logger = require('morgan')
 const sassMiddleware = require('node-sass-middleware')
 const exphbs = require('express-handlebars')
 const _ = require('lodash')
-const track = require('./middleware/track.js')
+
+const Visitors = require('./utils/visitors')
 
 const indexRouter = require('./routes/index')
-const newsRouter = require('./routes/news')
+const dashRouter = require('./routes/dashboard')
 
-const app = express();
+const app = express()
+const io  = app.io = require( "socket.io" )()
+// _.extend(app.locals, require('./config'))
+// console.log(app.locals)
+const visitors = new Visitors(app)
 
 _.extend(app.locals, {
   site: {
@@ -23,14 +28,13 @@ const hbs = exphbs.create({
   layoutsDir: 'views/layouts/',
   defaultLayout: 'main',
   extname: '.hbs',
-  helpers: require('./helpers/handlebars')
+  helpers: require('./utils/handlebars.js')
 })
 
 // view engine setup
 app.engine('.hbs', hbs.engine)
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', '.hbs')
-app.set('view cache', false)
 app.disable('view cache')
 
 app.use(logger('dev'))
@@ -45,8 +49,8 @@ app.use(sassMiddleware({
 }))
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/', indexRouter)
-app.use('/news', newsRouter)
+app.use('/news', indexRouter)
+app.use('/dashboard', dashRouter)
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
