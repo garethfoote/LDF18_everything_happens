@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="{{#if site.debug}}http://localhost:8080/{{/if}}bundle.css">
+
+    {{#if images}}
+      <script>
+        window.images = {{{toJSON images}}}
+      </script>
+    {{/if}}
+
+  </head>
+  <body>
+    <canvas id="bg" width="400" height="400"></canvas>
+
+    {{{body}}}
+
+    <script src="{{#if site.debug}}http://localhost:8080/{{/if}}bundle.js"></script>
+  </body>
+</html>

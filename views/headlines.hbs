@@ -1,0 +1,35 @@
+
+ <div class="container">
+    {{#everyNth headlines 3}}
+        {{#if @isModZeroNotFirst}}
+            </div>
+        {{/if}}
+        {{#if @isModZero}}
+            <div class="row">
+        {{/if}}
+       <div class="four columns">
+            <div class="Article">
+                <div class="Article-img js-pixelate">
+                    <img src="images/placeholder.png" />
+                </div>  
+                <div class="Article-header">
+                    <h4>{{this}}</h4>  
+                </div>
+            </div>
+        </div>
+        {{#if @isLast}}
+            </div>
+        {{/if}}
+    {{/everyNth}}
+</div>
+
+<div class="Message">
+    <div class="Message-scrolling js-message">
+        Something has changed
+        Something has changed
+        Something has changed
+        Something has changed
+        Something has changed
+    </div>
+</div>
+

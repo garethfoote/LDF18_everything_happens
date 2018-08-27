@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css?family=Inconsolata:400,700');
+@import url('https://fonts.googleapis.com/css?family=Raleway');
+@import "~skeleton-css/css/normalize";
+@import "~skeleton-css/css/skeleton";
+
+$font-colour: blue;
+
+.Message {
+    position: fixed;
+    bottom: 20px;
+    right: 0;
+    width: 500px;
+    height: 50px;
+    background: rgba(0, 0, 255, 0.9);
+    color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+    line-height: 50px;
+    font-size: 30px;
+    overflow:hidden;
+    white-space:nowrap;
+    border: 10px solid rgba(255, 255, 255, 0.9);
+    border-right: none;
+    transition: right 0.4s ease-in-out;
+}
+
+.Message-scrolling {
+    overflow:hidden;
+    position: relative;
+    display: inline-block;
+    padding-left: 100%;
+    min-width: 500px;
+    animation: marquee 8s linear 3s infinite;
+}
+
+.Message.is-hidden {
+    right: -520px;
+}
+
+@keyframes marquee {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(-100%, 0);
+    }
+  }
+
+.Article {
+    height: 300px;
+    margin-bottom: 1rem;
+}
+
+.Article:hover {
+    cursor: pointer;
+}
+
+.Article-header {
+    height: 3.2 * 4rem;
+    line-clamp: 3;
+    h4 {
+        font-size: 3rem;
+        line-height: 3.2rem;
+    }
+}
+
+.Article-img {
+    position: relative;
+}
+
+.Article-img canvas,
+.Article-img img {
+    height: auto;
+    max-width: 100%;
+}
+
+.Article-img canvas {
+    position: absolute;
+    top: 0;
+}
+
+body {
+    // font-family: 'Roboto Mono', monospace;
+    font-family: 'Arial', sans-serif;
+    color: $font-colour;
+    height: 100vh;
+    // overflow: hidden;
+    overflow-y: hidden; 
+}
+
+::selection { 
+    background-color: yellow; color: blue; 
+} 
+
+p {
+    line-height: 24px;
+}
+
+a {
+    text-decoration: none;
+    // background-image: linear-gradient(to top,
+    // rgba(255,255,0,0) 11%,
+    // rgba(255,255,0,1) 11%,
+    // rgba(255,255,0,1) 100%,
+    // rgba(255,255,0,0) 100%
+    // );
+    background-image: linear-gradient(to top,
+    rgba(0,0,255,0) 11%,
+    rgba(0,0,255,.6) 11%,
+    rgba(0,0,255,.6) 100%,
+    rgba(0,0,255,0) 100%
+    );
+    background-repeat: no-repeat;
+    background-size: 100% 0.1em;
+    background-position: 0 95%;
+    transition: background-size 0.15s ease-in;
+}
+
+a:visited {
+    color: blue;
+}
+
+a:hover {
+    color: darkblue;
+    // background-image: linear-gradient(to top,
+    // rgba(255,255,0,0) 11%,
+    // rgba(255,255,0,1) 11%,
+    // rgba(255,255,0,1) 100%,
+    // rgba(255,255,0,0) 100%
+    // );
+    // background-size: 100% 80%;
+
+    background-image: linear-gradient(to top,
+    rgba(0,0,255,0) 11%,
+    rgba(0,0,255,.6) 11%,
+    rgba(0,0,255,.6) 100%,
+    rgba(0,0,255,0) 100%
+    );
+    background-size: 100% 50%;
+}
+
+
+canvas#bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    // box-sizing: border-box;
+    // border: 8px solid blue;
+    // padding: 8px;
+}
