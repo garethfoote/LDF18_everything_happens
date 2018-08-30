@@ -1,4 +1,7 @@
 module.exports = {
-  debug: typeof process.env.DEBUG !== 'undefined',
+  site: {
+    debug: typeof process.env.DEBUG !== 'undefined'
+  },
+  mongoPort: 14780
 }
 
