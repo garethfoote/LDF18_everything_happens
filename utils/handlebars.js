@@ -36,9 +36,7 @@ module.exports = {
         } else {
             ret = inverse(this);
         }
-        console.log('data', data);
         options.data = data
-        // console.log(ret)
         return ret;
     }
 }

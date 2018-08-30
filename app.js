@@ -9,22 +9,28 @@ const exphbs = require('express-handlebars')
 const _ = require('lodash')
 const httpAuth = require('http-auth');
 
+const Persist = require('./utils/persist');
 const Visitors = require('./utils/visitors')
-
-const indexRouter = require('./routes/index')
-const dashRouter = require('./routes/dashboard')
 
 const app = express()
 const io  = app.io = require( "socket.io" )()
-// _.extend(app.locals, require('./config'))
-// console.log(app.locals)
+_.extend(app.locals, require('./config'))
+
+const persist = new Persist()
 const visitors = new Visitors(app)
 
-_.extend(app.locals, {
-  site: {
-    debug: typeof process.env.DEBUG !== 'undefined',
-  }
-})
+// console.log(await persist.getAll())
+
+
+const userAgentRouter = require('./routes/userAgent')(persist)
+const indexRouter = require('./routes/index')
+const dashRouter = require('./routes/dashboard')
+
+// Configure request persist
+var requestPersist = function (req, res, next) {
+  persist.visit(req)
+  next()
+}
 
 // Configure basic auth
 const basic = httpAuth.basic({
@@ -59,8 +65,9 @@ app.use(sassMiddleware({
 }))
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/news', indexRouter)
+app.use('/news', requestPersist, indexRouter)
 app.use('/dashboard', authMiddleware, dashRouter)
+app.use('/useragents', authMiddleware, userAgentRouter)
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
