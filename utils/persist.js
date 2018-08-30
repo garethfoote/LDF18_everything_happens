@@ -13,9 +13,17 @@ class Persist {
   }
   
   connect(){
-    const dbName = 'freddie01'
+    const dbName = 'admin'
     const url = `mongodb://localhost:${process.env.MONGO_PORT}/${dbName}`
-    mongoose.connect(url, { useNewUrlParser: true });
+
+    const options = { useNewUrlParser: true }
+    if(typeof process.env.DEBUG === 'undefined') {
+      options.auth = {
+        user : process.env.MONGO_UN,
+        password : process.env.MONGO_PW
+      }
+    }
+    mongoose.connect(url, options);
 
     var db = mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error:'));
