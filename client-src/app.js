@@ -4,8 +4,19 @@ const CanvasGrid = require("./scripts/canvas-grid")
 const CanvasImage = require("./scripts/canvas-image")
 const Movement = require("./scripts/movement")
 
+const socketIn = require('socket.io-client')()
+const socketOut = require('socket.io-client')('http://localhost:3001', {
+  path: '/socket.io'
+})
+
+// console.log('socket out connected', socketOut)
+socketIn.on('visitor', function(msg){
+  console.log('in -> out: ' + msg);
+  socketOut.emit('visitor', msg)
+})
+
 if(!window.images){
-    console.error("No image array available");
+  console.error("No image array available");
 }
 
 const grid = new CanvasGrid(document.getElementById("bg"))
@@ -14,7 +25,7 @@ const messageEl = document.querySelector('.js-message')
 const canvasImages = []
 
 const scrollDuration = 500
-let intervalDuration = scrollDuration + Math.randomRange(500, 2500)
+let intervalDuration = scrollDuration + Math.randomRange(500, 5000)
 let timeoutId = -1
 let isForceScrolling = false
 let isUserControlled = false
@@ -62,34 +73,38 @@ const scrollStarted = () => {
     if(isForceScrolling == false){
     }
 }
+
 const mouseStarted = () => {  
     console.log("mouse started", isUserControlled)
+
     if(isUserControlled == false){
-        messageEl.parentNode.classList.add('is-hidden')
-        setTimeout(() => {
-            messageEl.innerHTML = "You have regained control"
-            messageEl.style.animationDelay = '-0.1s'
-            messageEl.parentNode.classList.remove('is-hidden')
-            setTimeout(() => {
-                messageEl.parentNode.classList.add('is-hidden')
-            }, 20000)
-        }, 500)
+      socketOut.emit('mouse-started')
+      messageEl.parentNode.classList.add('is-hidden')
+      // setTimeout(() => {
+      //   messageEl.innerHTML = "You have regained control"
+      //   messageEl.style.animationDelay = '-0.1s'
+      //   messageEl.parentNode.classList.remove('is-hidden')
+      //   setTimeout(() => {
+      //     messageEl.parentNode.classList.add('is-hidden')
+      //   }, 20000)
+      // }, 500)
     }
     isUserControlled = true
     Utils.scrollStop()  
-
 }
+
 const mouseStopped = () => {
     if(isUserControlled == true){
-        messageEl.parentNode.classList.add('is-hidden')
-        setTimeout(() => {
-            messageEl.innerHTML = "The bots are back"
-            messageEl.style.animationDelay = '-0.1s'
-            messageEl.parentNode.classList.remove('is-hidden')
-            setTimeout(() => {
-                messageEl.parentNode.classList.add('is-hidden')
-            }, 20000)
-        }, 500)
+      socketOut.emit('mouse-stopped')
+      messageEl.parentNode.classList.add('is-hidden')
+      // setTimeout(() => {
+      //   messageEl.innerHTML = "The bots are back"
+      //   messageEl.style.animationDelay = '-0.1s'
+      //   messageEl.parentNode.classList.remove('is-hidden')
+      //   setTimeout(() => {
+      //     messageEl.parentNode.classList.add('is-hidden')
+      //   }, 20000)
+      // }, 500)
     }
     isUserControlled = false
     messageEl.innerHTML = "You have regained control."
@@ -131,10 +146,10 @@ window.addEventListener('mousemove', (e) => {
     lastPosY = mouseY
 })
 
-const initMovement = () => {
-    const movement = new Movement(5000, mouseStopped, mouseStarted, scrollStarted);
+const detectMovement = () => {
+  const movement = new Movement(5000, mouseStopped, mouseStarted, scrollStarted);
 }
 
 // nextImage()
-// initMovement()
+detectMovement()
 // grid.pulse()

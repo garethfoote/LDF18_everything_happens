@@ -16,11 +16,10 @@ const app = express()
 const io  = app.io = require( "socket.io" )()
 _.extend(app.locals, require('./config'))
 
-const persist = new Persist()
+const persist = new Persist(app)
 const visitors = new Visitors(app)
 
 // console.log(await persist.getAll())
-
 
 const userAgentRouter = require('./routes/userAgent')(persist)
 const indexRouter = require('./routes/index')

@@ -10,6 +10,21 @@ class Persist {
 
   constructor(app){    
     this.connect()
+    this.io = app.io
+    this.initIO()
+  }
+
+  initIO(){
+    const io = this.io
+    return new Promise((resolve, reject) => {
+      io.on('connection', (socket) => {
+        resolve(io) 
+      })
+
+      io.on('error', (socket) => {
+        reject("io not connected") 
+      })
+    })
   }
   
   connect(){
@@ -39,7 +54,16 @@ class Persist {
       userAgent: headers['user-agent'],
       ip : headers['x-forwarded-for'] || req.connection.remoteAddress
     })
-    visit.save()
+    visit.save((err, model) => {
+      Promise.all([this.initIO(), this.getAll()])
+        .then((result) => {
+          const [io, visits] = result;
+          this.io.emit('visitor', {
+            visits: visits.length,
+            userAgent : headers['user-agent']
+          })
+        })
+    })
   }
 
   async getAll(){
