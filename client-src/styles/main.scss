@@ -37,6 +37,37 @@ $font-colour: blue;
     right: -520px;
 }
 
+.AlertMessage {
+  z-index: 100;
+  position: fixed;
+  top: -50px;
+  right: 0;
+  width: 100vw;
+  height: 50px;
+  background: rgba(0, 0, 255, 0.9);
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+  line-height: 50px;
+  font-size: 30px;
+  background-image: linear-gradient(45deg, #00ffff 25%, #0000ff 25%, #0000ff 50%, #00ffff 50%, #00ffff 75%, #0000ff 75%, #0000ff 100%);
+  background-size: 50px 50px;
+}
+
+body.has-lost-focus .AlertMessage {
+  top: 0;
+}
+
+body.has-lost-focus::before {
+  content: " ";
+  position: fixed;
+  z-index: 99;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.75)
+}
+
+
 @keyframes marquee {
     0% {
       transform: translate(0, 0);
