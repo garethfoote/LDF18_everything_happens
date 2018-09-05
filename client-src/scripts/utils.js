@@ -146,7 +146,7 @@ const elementIndexesInView = (imgElements) => {
     imgElementsArray.reverse()
     
     imgElementsArray.some((el, i) => {
-        firstLast[1] = imgElementsArray.length-i
+        firstLast[1] = imgElementsArray.length-i-1
         return Utils.isInViewport(el)
     })
 

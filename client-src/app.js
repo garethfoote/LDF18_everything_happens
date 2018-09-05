@@ -3,21 +3,17 @@ const Utils = require("./scripts/utils.js")
 const CanvasGrid = require("./scripts/canvas-grid")
 const CanvasImage = require("./scripts/canvas-image")
 const Movement = require("./scripts/movement")
+const Articles = require("./scripts/articles")
+const PageVisible = require("./scripts/page-visibility")
 
-// PAGE VISIBILTY
-let pageVisible = false
-window.onfocus = function () { 
-  pageVisible = true
-  console.log(document)
-  document.body.classList.remove('has-lost-focus')
-  nextImage()
-}; 
-
-window.onblur = function () { 
-  pageVisible = false
-  document.body.classList.add('has-lost-focus')
-  preventNextImage()
-}; 
+if(!window.images){
+  console.error("No image array available");
+}
+const articles = new Articles(750)
+// Visibility
+const pageVisible = new PageVisible(() => { /* articles.play() */ }, () => { articles.pause() })
+// GRID
+const grid = new CanvasGrid(document.getElementById("bg"))
 
 // SOCKETS
 const socketIn = require('socket.io-client')()
@@ -27,110 +23,43 @@ const socketOut = require('socket.io-client')('http://localhost:3001', {
 
 socketIn.on('visitor', function(msg){
   console.log('in -> out: ' + msg);
-  if(pageVisible) socketOut.emit('visitor', msg)
+  if(pageVisible.visible && socketOut) socketOut.emit('visitor', msg)
 })
 
-if(!window.images){
-  console.error("No image array available");
-}
-
-// IMAGES & SCROLLING
-const grid = new CanvasGrid(document.getElementById("bg"))
-const imgElements = document.querySelectorAll('.js-pixelate')
+// MESSAGES
 const messageEl = document.querySelector('.js-message')
-const canvasImages = []
+messageEl.innerHTML = "You have regained control."
 
-const scrollDuration = 500
-let intervalDuration = scrollDuration + Math.randomRange(500, 5000)
-let timeoutId = -1
-let isForceScrolling = false
-let isUserControlled = false
+// INTERACTION
+Array.from(articles.getHTMLElements()).forEach((el, i) => {
+  el.addEventListener('mouseover', (e) => {
+    if(articles.get(i) != null){
+      articles.get(i).toggleAnim()
+    }
+  })
 
-const preventNextImage = () => {
-  console.log('prevent')
-  Utils.scrollStop()
-  clearTimeout(timeoutId)
-}
-const nextImage = () => {
-  if(pageVisible == false) return
-  console.log('next')
-  let elIndex
-  if(isUserControlled === true){
-      const firstLastInView = Utils.elementIndexesInView(imgElements)
-      elIndex = Math.randomRange(firstLastInView[0], firstLastInView[1])
-      intervalDuration = Math.randomRange(500, 1500)
-  } else {
-      elIndex = Math.floor(Math.random()*imgElements.length)
-      intervalDuration = scrollDuration + Math.randomRange(500, 2500)
-  }
-
-  // Choose random element and image
-  const parentEl = imgElements[elIndex]
-  const imageUrl = Utils.chooseRandomArray(window.images)
-  
-  // Scroll to it
-  if(isUserControlled === false){
-      console.log("user controlled", isUserControlled)
-      Utils.scrollToElement(parentEl, scrollDuration)
-  }
-
-  // and reveal/pixelate after scroll delay
-  setTimeout(() => {
-      canvasImages[elIndex] = new CanvasImage(parentEl, imageUrl)
-  }, (isUserControlled === false ? scrollDuration : 1))
-
-  // Go again.
-  // intervalDuration = nextScrollDuration + Math.randomRange(500, 2500)
-  timeoutId = setTimeout(nextImage.bind(this), intervalDuration)
-}
-
-Array.from(imgElements).forEach((el, i) => {
-    el.addEventListener('mouseover', (e) => {
-        if(canvasImages[i] != null){
-            canvasImages[i].toggleAnim()
-        }
-    })
+  // el.addEventListener('click', (e) => {
+  //   if(images.articles[i] != null){
+  //     images.articles[i].toggleAnim()
+  //   }
+  // })
 })
 
-const scrollStarted = () => {    
-    if(isForceScrolling == false){
-    }
-}
-
+// MOVEMENT
 const mouseStarted = () => {  
-    if(isUserControlled == false){
-      if(pageVisible) socketOut.emit('mouse-started')
-      messageEl.parentNode.classList.add('is-hidden')
-      // setTimeout(() => {
-      //   messageEl.innerHTML = "You have regained control"
-      //   messageEl.style.animationDelay = '-0.1s'
-      //   messageEl.parentNode.classList.remove('is-hidden')
-      //   setTimeout(() => {
-      //     messageEl.parentNode.classList.add('is-hidden')
-      //   }, 20000)
-      // }, 500)
-    }
-    isUserControlled = true
-    Utils.scrollStop()  
-    // console.log("mouse started", isUserControlled)
+  if(articles.getUserControl() == false){
+    if(pageVisible.visible && socketOut) socketOut.emit('mouse-started')
+    console.log("mouse started", articles.getUserControl())
+  }
+  articles.setUserControl(true)  
 }
 
 const mouseStopped = () => {
-    if(isUserControlled == true){
-      if(pageVisible) socketOut.emit('mouse-stopped')
-      messageEl.parentNode.classList.add('is-hidden')
-      // setTimeout(() => {
-      //   messageEl.innerHTML = "The bots are back"
-      //   messageEl.style.animationDelay = '-0.1s'
-      //   messageEl.parentNode.classList.remove('is-hidden')
-      //   setTimeout(() => {
-      //     messageEl.parentNode.classList.add('is-hidden')
-      //   }, 20000)
-      // }, 500)
-    }
-    isUserControlled = false
-    messageEl.innerHTML = "You have regained control."
-    // console.log("mouse stopped", isUserControlled)
+  if(articles.getUserControl() == true){
+    if(pageVisible.visible && socketOut) socketOut.emit('mouse-stopped')
+    console.log("mouse stopped", articles.getUserControl())
+  }
+  articles.setUserControl(false)
 }
 
 let lastPosX, lastPosY
@@ -168,10 +97,7 @@ window.addEventListener('mousemove', (e) => {
     lastPosY = mouseY
 })
 
-const detectMovement = () => {
-  const movement = new Movement(5000, mouseStopped, mouseStarted, scrollStarted);
-}
-
-nextImage()
-detectMovement()
+articles.setUserControl(true)
+articles.play()
+// const movement = new Movement(5000, mouseStopped, mouseStarted, ()=>{});
 // grid.pulse()
