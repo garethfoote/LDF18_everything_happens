@@ -1,6 +1,7 @@
 
- <div class="AlertMessage"></div>
- <div class="container">
+<div class="AlertMessage"></div>
+<div class="u-full-width">
+  <div class="container">
     {{#everyNth headlines 3}}
         {{#if @isModZeroNotFirst}}
             </div>
@@ -8,7 +9,7 @@
         {{#if @isModZero}}
             <div class="row">
         {{/if}}
-       <div class="four columns">
+        <div class="four columns">
             <div class="Article js-article">
                 <div class="Article-img js-article-pixelate">
                     <img src="images/placeholder.png" />
@@ -22,6 +23,7 @@
             </div>
         {{/if}}
     {{/everyNth}}
+  </div>
 </div>
 
 <div class="Message is-hidden js-message">
