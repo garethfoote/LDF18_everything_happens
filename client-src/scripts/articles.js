@@ -6,21 +6,23 @@ let isUserControlled = false
 
 class Articles {
 
-  constructor(scrollDuration){
+  constructor(scrollDuration, intervalRange){
     this.paused = true
 
     this.timeoutId = -1
     this.elements = document.querySelectorAll('.js-article')
     this.items = []
 
-    this.scrollDuration = scrollDuration
-    this.intervalDuration = this.scrollDuration + Math.randomRange(500, 5000)
+    this.scrollDuration = scrollDuration || 500
+    this.intervalRange = intervalRange || [500, 5000]
+
   }
 
   setUserControl(hasControl){
     isUserControlled = hasControl
     if(hasControl === true){
-      Utils.scrollStop()  
+      this.pause()
+      this.play()
     }
   }
 
@@ -35,42 +37,50 @@ class Articles {
   }
 
   play(){
-    this.paused = false
-    this.next()
+    if(this.paused == true){
+      this.paused = false
+      this.next()
+    }
   }
 
   next(){
+    console.log('play')
     if(this.paused == true) return
 
     let elIndex
     if(isUserControlled === true){
         const firstLastInView = Utils.elementIndexesInView(this.elements)
-        elIndex = Math.randomRange(firstLastInView[0], firstLastInView[1])
-        this.intervalDuration = Math.randomRange(500, 1500)
-    } else {
+        console.log(firstLastInView)
+        elIndex = Math.randomRange(Math.max(0, firstLastInView[0]-3), Math.min(this.elements.length-1, firstLastInView[1]+3))
+        console.log(elIndex)
+        this.intervalDuration = Math.randomRange(this.intervalRange[0], this.intervalRange[1]/2)
+      } else {
         elIndex = Math.floor(Math.random()*this.elements.length)
-        this.intervalDuration = this.scrollDuration + Math.randomRange(500, 2500)
-    }
-  
+        this.intervalDuration = (this.scrollDuration) + Math.randomRange(this.intervalRange[0], this.intervalRange[1])
+      }
+      
     // Choose random element and image
     const parentEl = this.elements[elIndex]
     const imageUrl = Utils.chooseRandomArray(window.images)
-    
-    // Scroll to it
-    if(isUserControlled === false){
-        Utils.scrollToElement(parentEl, this.scrollDuration)
+  
+    const animationCompleteHandler = () => {
+      // Remove handler
+      Utils.off('animation-complete', animationCompleteHandler)
+      // Reveal image.
+      this.items[elIndex] = new Article(parentEl, imageUrl)     
+      // Go again.
+      this.timeoutId = setTimeout(this.next.bind(this), this.intervalDuration) 
     }
-  
-    // and reveal/pixelate after scroll delay
-    setTimeout(() => {
-        // this.articles[elIndex] = new CanvasImage(parentEl, imageUrl)
-        this.items[elIndex] = new Article(parentEl, imageUrl)
-    }, (isUserControlled === false ? this.scrollDuration : 1))
-  
-    // Go again.
-    this.timeoutId = setTimeout(this.next.bind(this), this.intervalDuration)
+
+    if(isUserControlled === true){
+      animationCompleteHandler()
+    } else {
+      Utils.on('animation-complete', animationCompleteHandler)
+      Utils.scrollToElement(parentEl, this.scrollDuration)
+    }
 
   }
+  
 
   get(index){
     return this.items[index]

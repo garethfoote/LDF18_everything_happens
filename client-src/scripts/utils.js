@@ -1,3 +1,4 @@
+const eventify = require('./event-emitter')
 
 /**
  * JavaScript function prototype debouncer 2.0 - hnldesign.nl
@@ -41,6 +42,10 @@ if (typeof Function.prototype.deBounce !== 'function') {
     });
 }
 
+Math.map = (num, in_min, in_max, out_min, out_max) => {
+  return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 //t = current time
 //b = start value
 //c = change in value
@@ -67,22 +72,6 @@ const getOffset = (el) => {
     return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
 }
 
-const scrollToY = (to, duration) => {
-    let start = window.scrollY,
-        change = to - start,
-        currentTime = 0,
-        increment = 20
-
-    const animateScroll = () => {   
-        currentTime += increment
-        const val = Math.easeInOutQuad(currentTime, start, change, duration);
-        window.scroll(0, val)
-        if(currentTime < duration) {
-            Utils.scrollTimeoutId = setTimeout(animateScroll, increment)
-        }
-    }
-    animateScroll()
-}
 const isInViewport = (elem) => {
     var bounding = elem.getBoundingClientRect();
     return (
@@ -96,6 +85,26 @@ const isInViewport = (elem) => {
 const scrollStop = () => {
     Utils.stopForceScrolling = true
     clearTimeout(Utils.scrollTimeoutId)
+}
+
+const scrollToY = (to, duration) => {
+  let start = window.scrollY,
+      change = to - start,
+      currentTime = 0,
+      increment = 20
+
+  const animateScroll = () => {   
+      currentTime += increment
+      const val = Math.easeInOutQuad(currentTime, start, change, duration);
+      window.scroll(0, val)
+      if(currentTime < duration) {
+        Utils.scrollTimeoutId = setTimeout(animateScroll, increment)
+      } else {
+        Utils.emit('animation-complete')
+        console.log("Animation complete")
+      }
+  }
+  animateScroll()
 }
 
 const scrollToElement = (parentEl, scrollDuration) => {
@@ -190,4 +199,4 @@ Utils = {
     elementIndexesInView
 }
 
-module.exports = Utils
+module.exports = eventify(Utils)

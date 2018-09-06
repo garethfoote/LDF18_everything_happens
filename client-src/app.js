@@ -6,12 +6,37 @@ const Movement = require("./scripts/movement")
 const Articles = require("./scripts/articles")
 const PageVisible = require("./scripts/page-visibility")
 
+let windows = []; 
+if(window.name == ''){
+  windows.push(window) // push root window
+  window.addEventListener("beforeunload", function (e) {
+    var confirmationMessage = "\o/";
+    // console.log('hello')
+    (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+    return confirmationMessage;                            //Webkit, Safari, Chrome
+  })
+}
+
+let winOpen = window.open
+window.open = function() {
+  const win = winOpen.apply(this, arguments)
+  windows.push(win)
+}
+
+window.addEventListener('message', (event) => {
+  console.log(window.name, ' is opening ', windows.length+1, " - ", event.data)
+  if(event.data == 'open') {
+    window.open('/news', windows.length+1, `height=500,width=${Math.randomRange(700, 800)}`)
+  }
+})
+
 if(!window.images){
   console.error("No image array available");
 }
-const articles = new Articles(750)
-// Visibility
-const pageVisible = new PageVisible(() => { /* articles.play() */ }, () => { articles.pause() })
+
+const articles = new Articles(750, [1000, 2500])
+// VISIBILITY
+const pageVisible = new PageVisible(() => { articles.play() }, () => { articles.pause() })
 // GRID
 const grid = new CanvasGrid(document.getElementById("bg"))
 
@@ -38,11 +63,15 @@ Array.from(articles.getHTMLElements()).forEach((el, i) => {
     }
   })
 
-  // el.addEventListener('click', (e) => {
-  //   if(images.articles[i] != null){
-  //     images.articles[i].toggleAnim()
-  //   }
-  // })
+  el.addEventListener('click', (e) => {    
+    console.log(window.name, `next window name = ${windows.length+1}`)
+    if(window.name == ''){
+      window.open('/news', `${windows.length+1}`, `height=700,width=${Math.randomRange(500,800)}`)
+    } else {
+      if(!window.opener) window.close()
+      window.opener.postMessage("open", '*')
+    }
+  })
 })
 
 // MOVEMENT
@@ -97,7 +126,7 @@ window.addEventListener('mousemove', (e) => {
     lastPosY = mouseY
 })
 
-articles.setUserControl(true)
+// articles.setUserControl(true)
 articles.play()
-// const movement = new Movement(5000, mouseStopped, mouseStarted, ()=>{});
-// grid.pulse()
+const movement = new Movement(5000, mouseStopped, mouseStarted, ()=>{});
+grid.pulse()
