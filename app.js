@@ -19,10 +19,9 @@ _.extend(app.locals, require('./config'))
 const persist = new Persist(app)
 const visitors = new Visitors(app)
 
-// console.log(await persist.getAll())
-
 const userAgentRouter = require('./routes/userAgent')(persist)
-const indexRouter = require('./routes/index')
+const startRouter = require('./routes/start')
+const newsRouter = require('./routes/news')
 const dashRouter = require('./routes/dashboard')
 
 // Configure request persist
@@ -64,7 +63,8 @@ app.use(sassMiddleware({
 }))
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/news', requestPersist, indexRouter)
+app.use('/exhibit', startRouter)
+app.use('/news', requestPersist, newsRouter)
 app.use('/dashboard', authMiddleware, dashRouter)
 app.use('/useragents', authMiddleware, userAgentRouter)
 
