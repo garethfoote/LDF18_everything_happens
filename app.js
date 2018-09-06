@@ -26,7 +26,14 @@ const dashRouter = require('./routes/dashboard')
 
 // Configure request persist
 var requestPersist = function (req, res, next) {
-  persist.visit(req)
+  let blacklist = ["::1"]
+  blacklist = []
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  if(!blacklist.includes(ip)){
+    persist.visit(req)
+  } else {
+    console.log("ignoring: ", ip)
+  }
   next()
 }
 

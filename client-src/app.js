@@ -5,6 +5,7 @@ const CanvasImage = require("./scripts/canvas-image")
 const Movement = require("./scripts/movement")
 const Articles = require("./scripts/articles")
 const PageVisible = require("./scripts/page-visibility")
+const Message = require("./scripts/message")
 
 let windows = []; 
 if(window.name == ''){
@@ -24,6 +25,7 @@ window.open = function() {
 }
 
 window.addEventListener('message', (event) => {
+  if(event.data.type !== 'open') return
   console.log(window.name, ' is opening ', windows.length+1, " - ", event.data)
   if(event.data == 'open') {
     window.open('/news', windows.length+1, `height=500,width=${Math.randomRange(700, 800)}`)
@@ -34,11 +36,16 @@ if(!window.images){
   console.error("No image array available");
 }
 
+// ARTICLES
 const articles = new Articles(750, [1000, 2500])
 // VISIBILITY
-const pageVisible = new PageVisible(() => { articles.play() }, () => { articles.pause() })
+// const pageVisible = new PageVisible(articles.play.bind(articles), articles.pause.bind(articles))
+const pageVisible = new PageVisible(()=>{}, ()=>{})
 // GRID
 const grid = new CanvasGrid(document.getElementById("bg"))
+// MESSAGE
+const message = new Message(document.querySelector('.js-message'))
+
 
 // SOCKETS
 const socketIn = require('socket.io-client')()
@@ -47,13 +54,10 @@ const socketOut = require('socket.io-client')('http://localhost:3001', {
 })
 
 socketIn.on('visitor', function(msg){
-  console.log('in -> out: ' + msg);
+  console.log('in -> out: ', msg);
+  message.animate("USER AGENT: " + msg.userAgent)
   if(pageVisible.visible && socketOut) socketOut.emit('visitor', msg)
 })
-
-// MESSAGES
-const messageEl = document.querySelector('.js-message')
-messageEl.innerHTML = "You have regained control."
 
 // INTERACTION
 Array.from(articles.getHTMLElements()).forEach((el, i) => {
@@ -69,7 +73,7 @@ Array.from(articles.getHTMLElements()).forEach((el, i) => {
       window.open('/news', `${windows.length+1}`, `height=700,width=${Math.randomRange(500,800)}`)
     } else {
       if(!window.opener) window.close()
-      window.opener.postMessage("open", '*')
+      window.opener.postMessage({type: "open"}, '*')
     }
   })
 })
@@ -127,6 +131,6 @@ window.addEventListener('mousemove', (e) => {
 })
 
 // articles.setUserControl(true)
-articles.play()
+// articles.play()
 const movement = new Movement(5000, mouseStopped, mouseStarted, ()=>{});
 grid.pulse()

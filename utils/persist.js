@@ -67,7 +67,11 @@ class Persist {
   }
 
   async getAll(){
-    const visits = await Visitor.find(function (err, kittens) {
+    const filter = {
+      // ip: { $not: { $eq: "::1" } }
+    }
+
+    const visits = await Visitor.find(filter, (err, items) => {
       if (err) return console.error(err);
     }).exec()
 

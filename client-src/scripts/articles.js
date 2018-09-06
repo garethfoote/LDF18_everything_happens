@@ -44,15 +44,12 @@ class Articles {
   }
 
   next(){
-    console.log('play')
     if(this.paused == true) return
 
     let elIndex
     if(isUserControlled === true){
         const firstLastInView = Utils.elementIndexesInView(this.elements)
-        console.log(firstLastInView)
         elIndex = Math.randomRange(Math.max(0, firstLastInView[0]-3), Math.min(this.elements.length-1, firstLastInView[1]+3))
-        console.log(elIndex)
         this.intervalDuration = Math.randomRange(this.intervalRange[0], this.intervalRange[1]/2)
       } else {
         elIndex = Math.floor(Math.random()*this.elements.length)

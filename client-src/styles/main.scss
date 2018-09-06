@@ -7,9 +7,9 @@ $font-colour: blue;
 
 .Message {
     position: fixed;
-    bottom: 20px;
+    bottom: -70px;
     right: 0;
-    width: 500px;
+    width: 100vw;
     height: 50px;
     background: rgba(0, 0, 255, 0.9);
     color: white;
@@ -19,9 +19,9 @@ $font-colour: blue;
     font-size: 30px;
     overflow:hidden;
     white-space:nowrap;
-    border: 10px solid rgba(255, 255, 255, 0.9);
-    border-right: none;
-    transition: right 0.4s ease-in-out;
+    border-top: 10px solid rgba(255, 255, 255, 0.9);
+    border-bottom: 10px solid rgba(255, 255, 255, 0.9);
+    transition: bottom 0.5s ease-in-out;
 }
 
 .Message-scrolling {
@@ -29,12 +29,16 @@ $font-colour: blue;
     position: relative;
     display: inline-block;
     padding-left: 100%;
-    min-width: 500px;
-    animation: marquee 8s linear 3s infinite;
+    min-width: 100vw;
+    animation: marquee 8s linear -3s infinite;
 }
 
-.Message.is-hidden {
-    right: -520px;
+.Message.is-revealed {
+  bottom: 20px;
+}
+
+.Message.is-animated {
+  animation: bottom-top 4s ease-in-out 0s 1;
 }
 
 .AlertMessage {
@@ -69,13 +73,26 @@ body.has-lost-focus::before {
 
 
 @keyframes marquee {
-    0% {
-      transform: translate(0, 0);
-    }
-    100% {
-      transform: translate(-100%, 0);
-    }
+  0% {
+    transform: translate(0, 0);
   }
+  100% {
+    transform: translate(-100%, 0);
+  }
+}
+
+@keyframes bottom-top {
+  0% {
+    top: 100vh;
+  }
+  50% {
+    top: -70px;
+  }
+  100% {
+    top: 100vh;
+  }
+}
+
 
 .Article {
     height: 300px;
