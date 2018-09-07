@@ -3,9 +3,20 @@
 
   const goBtn = document.getElementById('go-time')
   goBtn.addEventListener('click', () => {
-    const win = window.open('/news', '_blank', "toolbar=yes,menubar=yes,location=yes,height=700,width=700")
-    win.moveTo(1000, 1000)
-    win.resizeTo(50, 50)
+
+    // var data = { type: "FROM_PAGE", text: "Hello from the webpage!" };
+    // window.postMessage(data, "*"); 
+
+    // The ID of the extension we want to talk to.
+    var editorExtensionId = "lheecdgjlmiiabcpamfcpnjgppieneim";
+    chrome.runtime.sendMessage(editorExtensionId, {type: "open"},
+      (response) => {
+        console.log("ANYTHING", response)
+      });
+
+    // const win = window.open('/news', '_blank', "toolbar=yes,menubar=yes,location=yes,height=700,width=700")
+    // win.moveTo(1000, 1000)
+    // win.resizeTo(50, 50)
   })
 
 </script>

@@ -15,12 +15,15 @@ class Articles {
 
     this.scrollDuration = scrollDuration || 500
     this.intervalRange = intervalRange || [500, 5000]
-
   }
 
   setUserControl(hasControl){
+    if(hasControl === isUserControlled) return
     isUserControlled = hasControl
+
+    // If has control is true then restart.
     if(hasControl === true){
+      console.log("setUserControl() - pause() play()")
       this.pause()
       this.play()
     }
@@ -31,6 +34,7 @@ class Articles {
   }
   
   pause(){
+    console.log("pause()")
     Utils.scrollStop()
     clearTimeout(this.timeoutId)
     this.paused = true
@@ -38,6 +42,7 @@ class Articles {
 
   play(){
     if(this.paused == true){
+      console.log("play()")
       this.paused = false
       this.next()
     }

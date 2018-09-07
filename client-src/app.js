@@ -6,16 +6,11 @@ const Movement = require("./scripts/movement")
 const Articles = require("./scripts/articles")
 const PageVisible = require("./scripts/page-visibility")
 const Message = require("./scripts/message")
+const editorExtensionId = "lheecdgjlmiiabcpamfcpnjgppieneim";
 
 let windows = []; 
 if(window.name == ''){
   windows.push(window) // push root window
-  window.addEventListener("beforeunload", function (e) {
-    var confirmationMessage = "\o/";
-    // console.log('hello')
-    (e || window.event).returnValue = confirmationMessage; //Gecko + IE
-    return confirmationMessage;                            //Webkit, Safari, Chrome
-  })
 }
 
 let winOpen = window.open
@@ -25,11 +20,9 @@ window.open = function() {
 }
 
 window.addEventListener('message', (event) => {
-  if(event.data.type !== 'open') return
-  console.log(window.name, ' is opening ', windows.length+1, " - ", event.data)
-  if(event.data == 'open') {
-    window.open('/news', windows.length+1, `height=500,width=${Math.randomRange(700, 800)}`)
-  }
+  // if(event.data.type !== 'open') return
+  // console.log(window.name, ' is opening ', windows.length+1, " - ", event.data)
+  // window.open('/news', windows.length+1, `height=500,width=${Math.randomRange(700, 800)}`)
 })
 
 if(!window.images){
@@ -39,8 +32,8 @@ if(!window.images){
 // ARTICLES
 const articles = new Articles(750, [1000, 2500])
 // VISIBILITY
-// const pageVisible = new PageVisible(articles.play.bind(articles), articles.pause.bind(articles))
-const pageVisible = new PageVisible(()=>{}, ()=>{})
+const pageVisible = new PageVisible(articles.play.bind(articles), articles.pause.bind(articles))
+// const pageVisible = new PageVisible(()=>{}, ()=>{})
 // GRID
 const grid = new CanvasGrid(document.getElementById("bg"))
 // MESSAGE
@@ -54,7 +47,7 @@ const socketOut = require('socket.io-client')('http://localhost:3001', {
 })
 
 socketIn.on('visitor', function(msg){
-  console.log('in -> out: ', msg);
+  // console.log('in -> out: ', msg);
   message.animate("USER AGENT: " + msg.userAgent)
   if(pageVisible.visible && socketOut) socketOut.emit('visitor', msg)
 })
@@ -68,31 +61,56 @@ Array.from(articles.getHTMLElements()).forEach((el, i) => {
   })
 
   el.addEventListener('click', (e) => {    
-    console.log(window.name, `next window name = ${windows.length+1}`)
-    if(window.name == ''){
-      window.open('/news', `${windows.length+1}`, `height=700,width=${Math.randomRange(500,800)}`)
-    } else {
-      if(!window.opener) window.close()
-      window.opener.postMessage({type: "open"}, '*')
+    // console.log(window.name, `next window name = ${windows.length+1}`)
+    // if(window.name == ''){
+    //   window.open('/news', `${windows.length+1}`, `height=700,width=${Math.randomRange(500,800)}`)
+    // } else {
+      // if(!window.opener) window.close()
+      // window.opener.postMessage({type: "open"}, '*')
+
+    console.log(chrome)
+    if(chrome){
+      console.log("message")
+      var editorExtensionId = "lheecdgjlmiiabcpamfcpnjgppieneim";
+      chrome.runtime.sendMessage(editorExtensionId, {type: "open"},
+        (response) => {
+          console.log(response)
+        });
     }
+    const w = Math.randomRange(600,800)
+    const h = Math.randomRange(600,800)
+    const top = Math.randomRange(0, screen.height-h)
+    const left = Math.randomRange(0, screen.width-w)
+    console.log(`${windows.length+1}`, w, h,top, left)
+    window.open('/news', `_blank`, `height=${h},width=${w},top=${top},left=${left}`)
+
+    // }
   })
 })
+
+const socketMouse = (msg) => {
+  socketOut.emit(msg)
+}
 
 // MOVEMENT
 const mouseStarted = () => {  
   if(articles.getUserControl() == false){
-    if(pageVisible.visible && socketOut) socketOut.emit('mouse-started')
+    if(pageVisible.visible && socketOut) {
+      socketOut.emit('mouse-event', 'start')
+    }
     console.log("mouse started", articles.getUserControl())
   }
-  articles.setUserControl(true)  
+  if(pageVisible.visible === true) articles.setUserControl(true)  
 }
 
 const mouseStopped = () => {
   if(articles.getUserControl() == true){
-    if(pageVisible.visible && socketOut) socketOut.emit('mouse-stopped')
+    if(socketOut) {
+      socketOut.emit('mouse-event', 'stop')
+    } 
     console.log("mouse stopped", articles.getUserControl())
   }
-  articles.setUserControl(false)
+  if(pageVisible.visible === true) articles.setUserControl(false)
 }
 
 let lastPosX, lastPosY

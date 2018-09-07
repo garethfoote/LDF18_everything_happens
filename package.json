@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "live-server": "node ./bin/www",
-    "dev-server": "DEBUG=express:* nodemon ./bin/www",
+    "dev-server": "DEBUG=express:* nodemon ./bin/www example.com",
     "dev-client": "webpack-dev-server --content-base public --host 0.0.0.0",
     "dev": "npm run dev-client | npm run dev-server",
     "build-client": "webpack -p"

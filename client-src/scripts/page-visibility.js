@@ -16,6 +16,7 @@ class PageVisible {
   }
 
   blurHandler(){
+    console.log("blured", window.name)
     this.blurCb()
     this.visible = false 
     document.body.classList.add('has-lost-focus')
