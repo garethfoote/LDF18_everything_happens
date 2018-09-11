@@ -14,19 +14,16 @@ class Persist {
     this.connect()
     this.io = app.io
     this.initIO()
-    console.log("Blacklisted IPs: ", blacklist)
+    // console.log("Blacklisted IPs: ", blacklist)
   }
 
   initIO(){
     const io = this.io
-    return new Promise((resolve, reject) => {
-      io.on('connection', (socket) => {
-        resolve(io) 
-      })
-
-      io.on('error', (socket) => {
-        reject("io not connected") 
-      })
+    io.on('connection', (socket) => {
+      // console.log("Socket.IO - connected") 
+    })
+    io.on('error', (socket) => {
+      // console.log("Socket.io not connected") 
     })
   }
   
@@ -47,7 +44,7 @@ class Persist {
     db.on('error', console.error.bind(console, 'connection error:'));
     db.once('open', function() {
       // we're connected!
-      console.log("Connected successfully to server")
+      // console.log("Connected successfully to server")
     });
   }
 
@@ -68,8 +65,7 @@ class Persist {
     })
     
     visit.save((err, model) => {
-      Promise.all([this.initIO(), this.getAll()])
-        .then((result) => {
+      this.getAll().then((result) => {
           const [io, visits] = result;
           this.io.emit('visitor', {
             visits: visits.length,
@@ -99,7 +95,7 @@ class Persist {
     const visits = await Visitor.find(filter, (err, items) => {
       if (err) return console.error(err);
     })
-    .limit(50).select('userAgent').exec()
+    .sort('-createdAt').limit(50).select('userAgent').exec()
     return visits
   }
   

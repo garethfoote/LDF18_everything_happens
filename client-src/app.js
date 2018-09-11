@@ -34,6 +34,9 @@ socket.updateCount()
 articles.on('article-complete', ()=>{
   localStorage.globalCount = Number(localStorage.globalCount)+1
   socket.updateCount()
+  if(socket.canOutbound === true) {
+    socket.send('user-event', 'article-complete')
+  } 
 })
 
 grid.on('mouse-move', () => {
@@ -70,18 +73,17 @@ Array.from(articles.getHTMLElements()).forEach((el, i) => {
     localStorage.globalCount = Number(localStorage.globalCount)-100
     socket.updateCount()
     window.open('/news', `_blank`, `height=${h},width=${w},top=${top},left=${left}`)
+    socket.send('user-event', 'page-opened')
   })
 })
 
 // MOVEMENT
 const mouseStarted = () => {  
   if(articles.getUserControl() == false){
-    console.log(socket.canOutbound)
-
     if(pageVisible.visible && socket.canOutbound) {
-      socket.send('mouse-event', 'start')
+      socket.send('user-event', 'start')
     }
-    console.log("mouse started", articles.getUserControl())
+    // console.log("mouse started", articles.getUserControl())
   }
   if(pageVisible.visible === true) articles.setUserControl(true)  
 }
@@ -89,9 +91,9 @@ const mouseStarted = () => {
 const mouseStopped = () => {
   if(articles.getUserControl() == true){
     if(socket.canOutbound === true) {
-      socket.send('mouse-event', 'stop')
+      // socket.send('user-event', 'stop')
     } 
-    console.log("mouse stopped", articles.getUserControl())
+    // console.log("mouse stopped", articles.getUserControl())
   }
   if(pageVisible.visible === true) articles.setUserControl(false)
 }
@@ -99,39 +101,39 @@ const mouseStopped = () => {
 let lastPosX, lastPosY
 let cursorSwitch = true
 window.addEventListener('mousemove', (e) => { 
-    const mouseX = e.clientX
-    const mouseY = e.clientY
+  const mouseX = e.clientX
+  const mouseY = e.clientY
 
-    grid.moveHandler.apply(grid, [mouseX, mouseY])
+  grid.moveHandler.apply(grid, [mouseX, mouseY])
 
-    const left = false;
-    const right = false;
-    const up = false;
-    const down = false;
-   
-    let direction = ""
+  const left = false;
+  const right = false;
+  const up = false;
+  const down = false;
+  
+  let direction = ""
 
-    if(lastPosY < mouseY) {
-        direction += "s"
-    } else if(lastPosY > mouseY) {
-        direction += "n"
-    }
-    if(lastPosX < mouseX) {
-        direction += "e"
-    } else if(lastPosX > mouseX) {
-        direction += "w"
-    }
+  if(lastPosY < mouseY) {
+      direction += "s"
+  } else if(lastPosY > mouseY) {
+      direction += "n"
+  }
+  if(lastPosX < mouseX) {
+      direction += "e"
+  } else if(lastPosX > mouseX) {
+      direction += "w"
+  }
 
-    if(cursorSwitch == true)
-        document.body.style.cursor = direction + "-resize"
-    else 
-        document.body.style.cursor = "auto"
+  if(cursorSwitch == true)
+      document.body.style.cursor = direction + "-resize"
+  else 
+      document.body.style.cursor = "auto"
 
-    lastPosX = mouseX
-    lastPosY = mouseY
+  lastPosX = mouseX
+  lastPosY = mouseY
 })
 
 // articles.setUserControl(true)
 // articles.play()
-const movement = new Movement(5000, mouseStopped, mouseStarted, ()=>{});
+const movement = new Movement(10000, mouseStopped, mouseStarted, ()=>{});
 grid.pulse()

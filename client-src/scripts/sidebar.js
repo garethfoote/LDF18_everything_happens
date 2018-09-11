@@ -6,12 +6,11 @@ class Sidebar {
     this.parent = el
 
     // setInterval(this.animate.bind(this), 7200)
-    this.animate()
+    // this.animate()
   }
 
   add(msg){
     const slideIn = this.parent.querySelector(':scope > div')
-    console.log(slideIn)
     const p = document.createElement("p")
     p.appendChild(document.createTextNode(msg))
     slideIn.insertBefore(p, slideIn.firstChild)

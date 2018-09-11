@@ -11,20 +11,24 @@ class Articles {
     eventify(this)
     this.paused = true
 
+    this.iterations = 0
     this.timeoutId = -1
     this.elements = document.querySelectorAll('.js-article')
     this.items = []
 
     this.scrollDuration = scrollDuration || 500
     this.intervalRange = intervalRange || [ 500, 5000 ]
+    this.intervalRangeOriginal = intervalRange
   }
 
   setUserControl(hasControl){
     if(hasControl === isUserControlled) return
     isUserControlled = hasControl
-
+    
     // If has control is true then restart.
     if(hasControl === true){
+      this.iterations = 0
+      this.intervalRange = this.intervalRangeOriginal
       // console.log("setUserControl() - pause() play()")
       this.pause()
       this.play()
@@ -53,11 +57,18 @@ class Articles {
   next(){
     if(this.paused == true) return
 
+    this.iterations++
+    if(this.iterations < 30 && this.iterations%4 === 0){
+      this.intervalRange[0] = Math.round(this.intervalRange[0]*1.75)
+      this.intervalRange[1] = Math.round(this.intervalRange[1]*1.75)
+      // console.log("Range increase:", this.intervalRange)
+    }
+
     let elIndex
     if(isUserControlled === true){
         const firstLastInView = Utils.elementIndexesInView(this.elements)
         elIndex = Math.randomRange(Math.max(0, firstLastInView[0]-3), Math.min(this.elements.length-1, firstLastInView[1]+3))
-        this.intervalDuration = Math.randomRange(this.intervalRange[0], this.intervalRange[1]/2)
+        this.intervalDuration = Math.randomRange(Math.round(this.intervalRangeOriginal[0]/2), Math.round(this.intervalRangeOriginal[1]/2))
       } else {
         elIndex = Math.floor(Math.random()*this.elements.length)
         this.intervalDuration = (this.scrollDuration) + Math.randomRange(this.intervalRange[0], this.intervalRange[1])
@@ -76,6 +87,7 @@ class Articles {
       // Reveal image.
       this.items[elIndex] = new Article(parentEl, imageUrl)     
       // Go again.
+      // console.log("This pause:", this.intervalDuration)
       this.timeoutId = setTimeout(this.next.bind(this), this.intervalDuration) 
     }
 

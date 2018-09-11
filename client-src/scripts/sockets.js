@@ -24,7 +24,7 @@ class Sockets {
 
   send(){
     if(this.canOutbound === true){
-      console.log(this.socketOut, ...arguments)
+      // console.log("Send:", ...arguments)
       this.socketOut.emit(...arguments)
     }
   }
@@ -50,7 +50,6 @@ class Sockets {
     //   if(!noTimeout) quantTimeoutId = setTimeout(updateCount, Math.randomRange(5000, 10000))
     // }
   }
-  
   
 }
 

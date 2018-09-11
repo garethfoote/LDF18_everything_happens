@@ -7,9 +7,9 @@ const logger = require('morgan')
 const sassMiddleware = require('node-sass-middleware')
 const exphbs = require('express-handlebars')
 const _ = require('lodash')
-const httpAuth = require('http-auth');
+const httpAuth = require('http-auth')
 
-const Persist = require('./utils/persist');
+const Persist = require('./utils/persist')
 const Visitors = require('./utils/visitors')
 
 const app = express()

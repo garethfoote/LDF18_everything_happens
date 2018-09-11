@@ -13,7 +13,7 @@ class Message {
 
   update(msg){
     this.textEl.innerHTML = msg
-    setTimeout(this.hide.bind(this), 5000)
+    // setTimeout(this.hide.bind(this), 5000)
   }
 
   hide(){

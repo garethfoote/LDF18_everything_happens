@@ -3,8 +3,8 @@ class PageVisible {
     this.focusCb = focusCb
     this.blurCb = blurCb
     
-    window.onfocus = this.focusHandler.bind(this)
-    window.onblur = this.blurHandler.bind(this)
+    // window.onfocus = this.focusHandler.bind(this)
+    // window.onblur = this.blurHandler.bind(this)
 
     this.focusHandler()
   }
@@ -16,7 +16,7 @@ class PageVisible {
   }
 
   blurHandler(){
-    console.log("blured", window.name)
+    // console.log("blured", window.name)
     this.blurCb()
     this.visible = false 
     document.body.classList.add('has-lost-focus')
