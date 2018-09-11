@@ -101,7 +101,6 @@ const scrollToY = (to, duration) => {
         Utils.scrollTimeoutId = setTimeout(animateScroll, increment)
       } else {
         Utils.emit('animation-complete')
-        console.log("Animation complete")
       }
   }
   animateScroll()

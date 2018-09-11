@@ -7,6 +7,7 @@ const Articles = require("./scripts/articles")
 const PageVisible = require("./scripts/page-visibility")
 const Message = require("./scripts/message")
 const Sidebar = require("./scripts/sidebar")
+const Socket = require("./scripts/sockets")
 const extensionId = window.chromeExt || "lheecdgjlmiiabcpamfcpnjgppieneim";
 
 console.log('Chrome Extension ID: ', extensionId)
@@ -22,53 +23,29 @@ const pageVisible = new PageVisible(articles.play.bind(articles), articles.pause
 // const pageVisible = new PageVisible(()=>{}, ()=>{})
 // GRID
 const grid = new CanvasGrid(document.getElementById("bg"))
-// MESSAGE
+// MESSAGES
 const message = new Message(document.querySelector('.js-message'))
 const sidebar = new Sidebar(document.querySelector('.js-sidebar'))
 sidebar.show()
 // SOCKETS
-const socketIn = require('socket.io-client')()
-const socketOut = require('socket.io-client')('http://localhost:3001', {
-  path: '/socket.io'
-})
-
-
-let quantTimeoutId = -1
-let currentCount = Number(localStorage.globalCount)
-const updateCount = () => {
-  clearTimeout(quantTimeoutId);
-  let delta = Math.abs(currentCount - Number(localStorage.globalCount))
-  let direction = (currentCount > Number(localStorage.globalCount)) ? -1 : 1
-  direction = (delta == 0) ? 0 : direction
-  if(delta != 0){
-    currentCount += (Math.min(10, delta)*direction)
-    socketOut.emit('visitor', currentCount)
-    quantTimeoutId = setTimeout(updateCount, 10)
-  }
-  // } else {
-  //   if(!noTimeout) quantTimeoutId = setTimeout(updateCount, Math.randomRange(5000, 10000))
-  // }
-}
-updateCount()
+const socket = new Socket()
+socket.updateCount()
 
 articles.on('article-complete', ()=>{
   localStorage.globalCount = Number(localStorage.globalCount)+1
-  updateCount()
+  socket.updateCount()
 })
 
 grid.on('mouse-move', () => {
   localStorage.globalCount = Number(localStorage.globalCount)-1
-  updateCount()
+  socket.updateCount()
 })
 
-socketIn.on('visitor', function(msg){
+socket.on('new-user-agent', (msg) => {
   // Add user agent to sidebar
-  sidebar.add(msg.userAgent)
-  // Update global count
-  localStorage.globalCount = Number(localStorage.globalCount)+1
-  updateCount()
+  sidebar.add(msg)
   // Add user agent to bottom bar
-  message.show("USER AGENT: " + msg.userAgent)
+  message.show("USER AGENT: " + msg)
 })
 
 // INTERACTION
@@ -91,32 +68,30 @@ Array.from(articles.getHTMLElements()).forEach((el, i) => {
     const top = Math.randomRange(0, screen.height-h)
     const left = Math.randomRange(0, screen.width-w)
     localStorage.globalCount = Number(localStorage.globalCount)-100
-    updateCount()
+    socket.updateCount()
     window.open('/news', `_blank`, `height=${h},width=${w},top=${top},left=${left}`)
   })
 })
 
-const socketMouse = (msg) => {
-  socketOut.emit(msg)
-}
-
 // MOVEMENT
 const mouseStarted = () => {  
   if(articles.getUserControl() == false){
-    if(pageVisible.visible && socketOut) {
-      socketOut.emit('mouse-event', 'start')
+    console.log(socket.canOutbound)
+
+    if(pageVisible.visible && socket.canOutbound) {
+      socket.send('mouse-event', 'start')
     }
-    // console.log("mouse started", articles.getUserControl())
+    console.log("mouse started", articles.getUserControl())
   }
   if(pageVisible.visible === true) articles.setUserControl(true)  
 }
 
 const mouseStopped = () => {
   if(articles.getUserControl() == true){
-    if(socketOut) {
-      socketOut.emit('mouse-event', 'stop')
+    if(socket.canOutbound === true) {
+      socket.send('mouse-event', 'stop')
     } 
-    // console.log("mouse stopped", articles.getUserControl())
+    console.log("mouse stopped", articles.getUserControl())
   }
   if(pageVisible.visible === true) articles.setUserControl(false)
 }
