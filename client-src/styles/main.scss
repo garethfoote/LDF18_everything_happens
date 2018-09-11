@@ -3,43 +3,82 @@
 @import "~skeleton-css/css/normalize";
 @import "~skeleton-css/css/skeleton";
 
-
 $font-colour: blue;
 
+.Sidebar {
+  position: fixed;
+  height: 100vh;
+  overflow: hidden;
+  background-color:rgba(0, 0, 255, 0.8);
+  left: 70vw;
+  top: 0;
+  transition: left 0.75s ease-in-out;
+  left: 100vw;
+}
+
+.Sidebar.is-revealed {
+  left: 70vw;
+}
+
+.Sidebar-inner {
+  color: white;
+  min-width: 30vw;
+  display: inline-block;
+  padding: 10px;
+}
+
+.Sidebar-inner p {
+  margin-bottom: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  width: auto;
+}
+
+.Sidebar-inner p:first-child {
+  font-weight: bold;
+  font-style: italic;
+}
+
+.Sidebar-inner p:hover {
+  animation: marquee 5s linear 0s infinite;
+  font-style: italic;
+}
+
+.Sidebar-inner p.do-animate {
+  animation: marquee 5s linear 0s infinite;
+  font-style: italic;
+}
+
 .Message {
-    position: fixed;
-    bottom: -70px;
-    right: 0;
-    width: 100vw;
-    height: 50px;
-    background: rgba(0, 0, 255, 0.9);
-    color: white;
-    text-transform: uppercase;
-    font-weight: bold;
-    line-height: 50px;
-    font-size: 30px;
-    overflow:hidden;
-    white-space:nowrap;
-    border-top: 10px solid rgba(255, 255, 255, 0.9);
-    border-bottom: 10px solid rgba(255, 255, 255, 0.9);
-    transition: bottom 0.5s ease-in-out;
+  position: fixed;
+  bottom: -70px;
+  right: 0;
+  width: 100vw;
+  height: 50px;
+  background: rgba(0, 0, 255, 0.9);
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+  line-height: 50px;
+  font-size: 30px;
+  overflow:hidden;
+  white-space:nowrap;
+  border-top: 10px solid rgba(255, 255, 255, 0.9);
+  border-bottom: 10px solid rgba(255, 255, 255, 0.9);
+  transition: bottom 0.5s ease-in-out;
 }
 
 .Message-scrolling {
-    overflow:hidden;
-    position: relative;
-    display: inline-block;
-    padding-left: 100%;
-    min-width: 100vw;
-    animation: marquee 8s linear -3s infinite;
+  overflow:hidden;
+  position: relative;
+  display: inline-block;
+  padding-left: 100%;
+  min-width: 100vw;
+  animation: marqueeBottom 8s linear -3s infinite;
 }
 
 .Message.is-revealed {
   bottom: 20px;
-}
-
-.Message.is-animated {
-  animation: bottom-top 4s ease-in-out 0s 1;
 }
 
 .AlertMessage {
@@ -72,8 +111,25 @@ body.has-lost-focus::before {
   background: rgba(0, 0, 0, 0.75)
 }
 
-
 @keyframes marquee {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(0, 0);
+  }
+  75% {
+    transform: translate(50%, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes marqueeBottom {
   0% {
     transform: translate(0, 0);
   }

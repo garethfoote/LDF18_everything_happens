@@ -21,19 +21,13 @@ const visitors = new Visitors(app)
 
 const userAgentRouter = require('./routes/userAgent')(persist)
 const startRouter = require('./routes/start')
-const newsRouter = require('./routes/news')
+const newsRouter = require('./routes/news')(persist)
 const dashRouter = require('./routes/dashboard')
 
 // Configure request persist
 var requestPersist = function (req, res, next) {
-  let blacklist = ["::1"]
-  blacklist = []
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  if(!blacklist.includes(ip)){
-    persist.visit(req)
-  } else {
-    console.log("ignoring: ", ip)
-  }
+  persist.visit(req)
   next()
 }
 

@@ -3,7 +3,7 @@ const router = express.Router()
 const glob = require('glob')
 
 const LineReader = require('../data/LineReader.js')
-const headlines = new LineReader('data/headlines/headline_data.csv');
+const headlines = new LineReader('data/headlines/headline_data.csv', true);
 const images = []
 
 // EXAMPLE: Setting layout for this whole route.
@@ -19,13 +19,18 @@ glob("data/images/images_*.csv", {}, (er, files) => {
   })
 })
 
-router.get('/', (req, res, next) => {
-  Promise.all([headlines.next(), ...images]).then(function(values) {
-    const hl = values.splice(0, 1).pop();
-    const imgs = [].concat.apply([], values);
-    // console.log('img', imgs)
-    res.render('headlines', { headlines : hl, images: imgs });
-  });
-})
+module.exports = (persist) => {
 
-module.exports = router;
+  router.get('/', (req, res, next) => {
+    Promise.all([headlines.next(), persist.getUserAgents(), ...images]).then(function(values) {
+      const hl = values.splice(0, 1).pop();
+      const ua = values.splice(0, 1).pop();
+      console.log(ua)
+      const imgs = [].concat.apply([], values);
+      // console.log('img', imgs)
+      res.render('headlines', { headlines : hl, images: imgs, userAgents : ua });
+    });
+  })
+
+  return router
+}

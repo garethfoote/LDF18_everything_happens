@@ -1,9 +1,11 @@
 "use strict"
+const eventify = require("./event-emitter")
 const Resize = require("./resize")
 const Utils = require("./utils")
 
 class CanvasGrid {
     constructor(canvas) {
+        eventify(this)
 
         this.gridSpace = 16
         this.canvas = canvas
@@ -31,11 +33,15 @@ class CanvasGrid {
     }
 
     moveHandler(mouseX, mouseY){        
-        // this.xPos = mouseX
-        // this.yPos = mouseY
+        const nextX = Math.round(mouseX/this.gridSpace)
+        const nextY = Math.round(mouseY/this.gridSpace)
 
-        this.xPos = Math.round(mouseX/this.gridSpace)
-        this.yPos = Math.round(mouseY/this.gridSpace)
+        if(nextX !== this.xPos || nextY !== this.yPos) {
+          this.emit("mouse-move")
+        }
+
+        this.xPos = nextX
+        this.yPos = nextY
     }
 
     size() {

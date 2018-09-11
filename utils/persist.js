@@ -6,11 +6,15 @@ var visitorSchema = new mongoose.Schema({
 }, { timestamps: { createdAt: 'createdAt' }})
 var Visitor = mongoose.model('Visitor', visitorSchema)
 
+let blacklist = ["::1", "195.194.24.159"]
+blacklist = []
+
 class Persist {
 
   constructor(app){    
     this.connect()
     this.io = app.io
+    this.lastIp = ''
     this.initIO()
   }
 
@@ -50,10 +54,21 @@ class Persist {
 
   visit(req){
     const headers = req.headers
+    const ip = headers['x-forwarded-for'] || req.connection.remoteAddress
+    
+    // Ignore.
+    if(ip === this.lastIp || blacklist.includes(ip)){
+      console.log("ignoring: ", ip)
+      return
+    }
+    
+    this.lastIp = ip
+
     var visit = new Visitor({ 
       userAgent: headers['user-agent'],
-      ip : headers['x-forwarded-for'] || req.connection.remoteAddress
+      ip : ip
     })
+    
     visit.save((err, model) => {
       Promise.all([this.initIO(), this.getAll()])
         .then((result) => {
@@ -67,9 +82,11 @@ class Persist {
   }
 
   async getAll(){
-    const filter = {
-      // ip: { $not: { $eq: "::1" } }
-    }
+    
+    const filter = {}
+    if(typeof process.env.DEBUG === 'undefined'){
+      filter.ip = { $not: { $in: blacklist } }
+    }      
 
     const visits = await Visitor.find(filter, (err, items) => {
       if (err) return console.error(err);
@@ -77,6 +94,20 @@ class Persist {
 
     return visits
   }
+
+  async getUserAgents(){
+    const filter = {}
+    if(typeof process.env.DEBUG === 'undefined'){
+      filter.ip = { $not: { $in: blacklist } }
+    }
+
+    const visits = await Visitor.find(filter, (err, items) => {
+      if (err) return console.error(err);
+    })
+    .limit(50).select('userAgent').exec()
+    return visits
+  }
+
 
 }
 

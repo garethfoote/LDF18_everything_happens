@@ -1,22 +1,63 @@
-<button id='go-time' >GO</button>
+<style>
+  #go-time {
+    border-color: green;
+  }
+  #go-time:hover {
+    background-color: green;
+    color: white;
+  }
+
+  #reset-time {
+    background-color: red;
+    color: white;
+  }
+</style>
+<button id='go'>GO</button>
+<button id='reset'>RESET</button>
+<button id='count'>COUNT</button>
+
 <script>
 
-  const goBtn = document.getElementById('go-time')
-  goBtn.addEventListener('click', () => {
+  const startCount = 14000000000
+  const goBtn = document.getElementById('go')
+  const resetBtn = document.getElementById('reset')
+  const countBtn = document.getElementById('count')
 
-    // var data = { type: "FROM_PAGE", text: "Hello from the webpage!" };
-    // window.postMessage(data, "*"); 
+  let currentCount = Number(localStorage.globalCount)
 
-    // The ID of the extension we want to talk to.
-    var editorExtensionId = "lheecdgjlmiiabcpamfcpnjgppieneim";
-    chrome.runtime.sendMessage(editorExtensionId, {type: "open"},
-      (response) => {
-        console.log("ANYTHING", response)
-      });
-
-    // const win = window.open('/news', '_blank', "toolbar=yes,menubar=yes,location=yes,height=700,width=700")
-    // win.moveTo(1000, 1000)
-    // win.resizeTo(50, 50)
+  countBtn.addEventListener('click', () => {    
+    updateCount()
   })
 
+  const updateCount = () => {
+    let delta = (currentCount > Number(localStorage.globalCount)) ? -1 : 1
+    delta = (currentCount == Number(localStorage.globalCount)) ? 0 : delta
+
+    if(delta != 0){
+      currentCount += delta
+      countBtn.textContent = `COUNT (${currentCount})`
+      setTimeout(updateCount, 10)
+    }
+  }
+
+  const updateReset = () => {
+    if(localStorage.globalCount){
+      resetBtn.textContent = `RESET (${localStorage.globalCount})`
+    }
+    requestAnimationFrame(updateReset)
+  }
+
+  goBtn.addEventListener('click', () => {
+    const win = window.open('/news', '_blank', "toolbar=yes,menubar=yes,location=yes,height=700,width=700")
+  })
+
+  resetBtn.addEventListener('click', () => {
+    var r = confirm(`Delete current storage count (${localStorage.globalCount||0})?`);
+    if (r == true) {
+      localStorage.globalCount = startCount
+      resetBtn.textContent = `RESET (${localStorage.globalCount})`
+    }
+  })
+
+  requestAnimationFrame(updateReset)
 </script>

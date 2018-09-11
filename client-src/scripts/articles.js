@@ -1,4 +1,5 @@
 const Utils = require("./utils.js")
+const eventify = require("./event-emitter.js")
 const CanvasImage = require("./canvas-image")
 const Article = require("./article")
 
@@ -7,6 +8,7 @@ let isUserControlled = false
 class Articles {
 
   constructor(scrollDuration, intervalRange){
+    eventify(this)
     this.paused = true
 
     this.timeoutId = -1
@@ -14,7 +16,7 @@ class Articles {
     this.items = []
 
     this.scrollDuration = scrollDuration || 500
-    this.intervalRange = intervalRange || [500, 5000]
+    this.intervalRange = intervalRange || [ 500, 5000 ]
   }
 
   setUserControl(hasControl){
@@ -23,7 +25,7 @@ class Articles {
 
     // If has control is true then restart.
     if(hasControl === true){
-      console.log("setUserControl() - pause() play()")
+      // console.log("setUserControl() - pause() play()")
       this.pause()
       this.play()
     }
@@ -34,7 +36,7 @@ class Articles {
   }
   
   pause(){
-    console.log("pause()")
+    // console.log("pause()")
     Utils.scrollStop()
     clearTimeout(this.timeoutId)
     this.paused = true
@@ -42,7 +44,7 @@ class Articles {
 
   play(){
     if(this.paused == true){
-      console.log("play()")
+      // console.log("play()")
       this.paused = false
       this.next()
     }
@@ -65,7 +67,10 @@ class Articles {
     const parentEl = this.elements[elIndex]
     const imageUrl = Utils.chooseRandomArray(window.images)
   
-    const animationCompleteHandler = () => {
+    const animationCompleteHandler = (doNotEmit) => {
+      if(!doNotEmit)
+        this.emit('article-complete')
+
       // Remove handler
       Utils.off('animation-complete', animationCompleteHandler)
       // Reveal image.
@@ -75,7 +80,7 @@ class Articles {
     }
 
     if(isUserControlled === true){
-      animationCompleteHandler()
+      animationCompleteHandler(true)
     } else {
       Utils.on('animation-complete', animationCompleteHandler)
       Utils.scrollToElement(parentEl, this.scrollDuration)
@@ -83,7 +88,6 @@ class Articles {
 
   }
   
-
   get(index){
     return this.items[index]
   }
