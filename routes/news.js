@@ -25,9 +25,7 @@ module.exports = (persist) => {
     Promise.all([headlines.next(), persist.getUserAgents(), ...images]).then(function(values) {
       const hl = values.splice(0, 1).pop();
       const ua = values.splice(0, 1).pop();
-      console.log(ua)
       const imgs = [].concat.apply([], values);
-      // console.log('img', imgs)
       res.render('headlines', { chromeExt : process.env.CHROME_EXT, headlines : hl, images: imgs, userAgents : ua });
     });
   })

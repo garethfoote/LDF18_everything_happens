@@ -26,7 +26,6 @@ const dashRouter = require('./routes/dashboard')
 
 // Configure request persist
 var requestPersist = function (req, res, next) {
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   persist.visit(req)
   next()
 }
