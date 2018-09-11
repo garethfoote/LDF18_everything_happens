@@ -7,7 +7,9 @@ const Articles = require("./scripts/articles")
 const PageVisible = require("./scripts/page-visibility")
 const Message = require("./scripts/message")
 const Sidebar = require("./scripts/sidebar")
-const editorExtensionId = "lheecdgjlmiiabcpamfcpnjgppieneim";
+const extensionId = window.chromeExt || "lheecdgjlmiiabcpamfcpnjgppieneim";
+
+console.log('Chrome Extension ID: ', extensionId)
 
 if(!window.images){
   console.error("No image array available");
@@ -79,8 +81,7 @@ Array.from(articles.getHTMLElements()).forEach((el, i) => {
 
   el.addEventListener('click', (e) => {    
     if(chrome){
-      var editorExtensionId = "lheecdgjlmiiabcpamfcpnjgppieneim";
-      chrome.runtime.sendMessage(editorExtensionId, {type: "open"},
+      chrome.runtime.sendMessage(extensionId, {type: "open"},
         (response) => {
           console.log(response)
         });

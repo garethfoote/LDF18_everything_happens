@@ -28,7 +28,7 @@ module.exports = (persist) => {
       console.log(ua)
       const imgs = [].concat.apply([], values);
       // console.log('img', imgs)
-      res.render('headlines', { headlines : hl, images: imgs, userAgents : ua });
+      res.render('headlines', { chromeExt : process.env.CHROME_EXT, headlines : hl, images: imgs, userAgents : ua });
     });
   })
 
