@@ -7,7 +7,7 @@ let isUserControlled = false
 
 class Articles {
 
-  constructor(scrollDuration, intervalRange){
+  constructor(scrollDuration, intervalRange, intervalRangeStatic){
     eventify(this)
     this.paused = true
 
@@ -24,6 +24,7 @@ class Articles {
 
     this.scrollDuration = scrollDuration || 500
     this.intervalRange = intervalRange || [ 500, 5000 ]
+    this.intervalRangeStatic = intervalRangeStatic || [ 500, 1000 ]
     this.intervalRangeOriginal = intervalRange
   }
 
@@ -75,7 +76,7 @@ class Articles {
     if(isUserControlled === true){
         const firstLastInView = Utils.elementIndexesInView(this.elements)
         elIndex = Math.randomRange(Math.max(0, firstLastInView[0]-3), Math.min(this.elements.length-1, firstLastInView[1]+3))
-        this.intervalDuration = Math.randomRange(Math.round(this.intervalRangeOriginal[0]/2), Math.round(this.intervalRangeOriginal[1]/2))
+        this.intervalDuration = Math.randomRange(Math.round(this.intervalRangeStatic), Math.round(this.intervalRangeStatic))
       } else {
         elIndex = Math.floor(Math.random()*this.elements.length)
         this.intervalDuration = (this.scrollDuration) + Math.randomRange(this.intervalRange[0], this.intervalRange[1])

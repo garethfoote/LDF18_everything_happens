@@ -19,7 +19,7 @@ if(!window.images){
 document.body.classList.add(`anim-offset-${Math.randomRange(1, 100)}`)
 
 // ARTICLES
-const articles = new Articles(750, [1000, 2500])
+const articles = new Articles(750, [1000, 2500], [250, 1000])
 // VISIBILITY
 const pageVisible = new PageVisible(articles.play.bind(articles), articles.pause.bind(articles))
 // const pageVisible = new PageVisible(()=>{}, ()=>{})
@@ -42,7 +42,7 @@ articles.on('article-complete', ()=>{
 })
 
 grid.on('mouse-move', () => {
-  localStorage.globalCount = Number(localStorage.globalCount)-1
+  localStorage.globalCount = Number(localStorage.globalCount)-3
   socket.updateCount()
 })
 
