@@ -62,8 +62,7 @@ Math.randomRange = (min, max) => {
 }
 
 let Utils = {
-    stopForceScrolling : false,
-    scrollTimeoutIds : []
+    stopForceScrolling : false
 }
 
 const getOffset = (el) => {
@@ -86,7 +85,6 @@ const isInViewport = (elem) => {
 const scrollStop = () => {
   Utils.stopForceScrolling = true
   clearTimeout(Utils.scrollTimeoutId)
-  Utils.scrollTimeoutIds.splice(Utils.scrollTimeoutIds.indexOf(Utils.scrollTimeoutId))
 }
 
 const scrollToY = (to, duration) => {
@@ -100,15 +98,12 @@ const scrollToY = (to, duration) => {
       currentTime += increment
       const val = Math.easeInOutQuad(currentTime, start, change, duration);
       window.scroll(0, val)
-      if(Utils.stopForceScrolling == false && currentTime < duration) {
+      if(Utils.stopForceScrolling === false && currentTime < duration) {
         const tId = setTimeout(animateScroll, increment)
         Utils.scrollTimeoutId = tId
-        Utils.scrollTimeoutIds.push(tId)
-        // if(Utils.scrollTimeoutIds.length > 1){
-        //   console.log('Utils - too many timeouts.', Utils.scrollTimeoutIds.length)
-        // }
       } else {
-        Utils.emit('animation-complete')
+        if(Utils.stopForceScrolling === false) 
+          Utils.emit('animation-complete')
       }
   }
   animateScroll()

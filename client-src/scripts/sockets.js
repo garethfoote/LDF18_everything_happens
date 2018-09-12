@@ -24,7 +24,7 @@ class Sockets {
 
   send(){
     if(this.canOutbound === true){
-      // console.log("Send:", ...arguments)
+      console.log("Send:", ...arguments)
       this.socketOut.emit(...arguments)
     }
   }

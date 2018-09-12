@@ -19,7 +19,7 @@ if(!window.images){
 document.body.classList.add(`anim-offset-${Math.randomRange(1, 100)}`)
 
 // ARTICLES
-const articles = new Articles(750, [1000, 2500], [250, 1000])
+const articles = new Articles(750, [1000, 2500], [500, 1000])
 // VISIBILITY
 const pageVisible = new PageVisible(articles.play.bind(articles), articles.pause.bind(articles))
 // const pageVisible = new PageVisible(()=>{}, ()=>{})
@@ -36,7 +36,7 @@ socket.updateCount()
 articles.on('article-complete', ()=>{
   // localStorage.globalCount = Number(localStorage.globalCount)+1
   // socket.updateCount()
-  if(socket.canOutbound === true) {
+  if( socket.canOutbound === true) {
     socket.send('user-event', 'article-complete')
   } 
 })
@@ -74,17 +74,17 @@ Array.from(articles.getHTMLElements()).forEach((el, i) => {
     const left = Math.randomRange(0, screen.width-w)
     localStorage.globalCount = Number(localStorage.globalCount)-100
     socket.updateCount()
-    window.open('/news', `_blank`, `height=${h},width=${w},top=${top},left=${left}`)
     socket.send('user-event', 'page-opened')
+    window.open('/news', `_blank`, `height=${h},width=${w},top=${top},left=${left}`)
   })
 })
 
 // MOVEMENT
-const mouseStarted = () => {  
-  if(articles.getUserControl() == false){
-    if(pageVisible.visible && socket.canOutbound) {
-      socket.send('user-event', 'start')
-    }
+const mouseStarted = () => {
+  if(articles.getUserControl() == false
+  && pageVisible.visible 
+  && socket.canOutbound) {
+      socket.send('user-event', 'mouse-start')
     // console.log("mouse started", articles.getUserControl())
   }
   if(pageVisible.visible === true) articles.setUserControl(true)  
@@ -137,5 +137,5 @@ window.addEventListener('mousemove', (e) => {
 
 // articles.setUserControl(true)
 // articles.play()
-const movement = new Movement(10000, mouseStopped, mouseStarted, ()=>{});
+const movement = new Movement(5000, mouseStopped, mouseStarted, ()=>{});
 grid.pulse()

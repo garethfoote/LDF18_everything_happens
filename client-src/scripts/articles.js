@@ -67,8 +67,8 @@ class Articles {
 
     this.iterations++
     if(this.iterations < 30 && this.iterations%4 === 0){
-      this.intervalRange[0] = Math.round(this.intervalRange[0]*1.75)
-      this.intervalRange[1] = Math.round(this.intervalRange[1]*1.75)
+      this.intervalRange[0] = Math.round(this.intervalRange[0]*1.1)
+      this.intervalRange[1] = Math.round(this.intervalRange[1]*1.1)
       // console.log("Range increase:", this.intervalRange)
     }
 
