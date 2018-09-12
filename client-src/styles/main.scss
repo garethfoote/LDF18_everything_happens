@@ -68,6 +68,13 @@ $font-colour: blue;
   transition: bottom 0.5s ease-in-out;
 }
 
+@for $variable from 1 to 100 {
+  body.anim-offset-#{$variable}.Message {
+    transition-delay: ($variable + 100) * 1ms;
+  }
+}
+
+
 .Message-scrolling {
   overflow:hidden;
   position: relative;
@@ -75,6 +82,12 @@ $font-colour: blue;
   padding-left: 100%;
   min-width: 100vw;
   animation: marqueeBottom 8s linear -3s infinite;
+}
+
+@for $variable from 1 to 100 {
+  body.anim-offset-#{$variable}.Message-scrolling {
+    animation-delay: $variable;
+  }
 }
 
 .Message.is-revealed {
@@ -94,13 +107,13 @@ $font-colour: blue;
   font-weight: bold;
   line-height: 50px;
   font-size: 30px;
-  background-image: linear-gradient(45deg, #ffff00 25%, #0000ff 25%, #0000ff 50%, #ffff00 50%, #ffff00 75%, #0000ff 75%, #0000ff 100%);
+  // background-image: linear-gradient(45deg, #ffff00 25%, #0000ff 25%, #0000ff 50%, #ffff00 50%, #ffff00 75%, #0000ff 75%, #0000ff 100%);
   background-size: 50px 50px;
 }
 
-body.has-lost-focus .AlertMessage {
-  top: 0;
-}
+// body.has-lost-focus .AlertMessage {
+//   top: 0;
+// }
 
 body.has-lost-focus::before {
   content: " ";

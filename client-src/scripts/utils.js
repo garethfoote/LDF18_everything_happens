@@ -62,7 +62,8 @@ Math.randomRange = (min, max) => {
 }
 
 let Utils = {
-    stopForceScrolling : false
+    stopForceScrolling : false,
+    scrollTimeoutIds : []
 }
 
 const getOffset = (el) => {
@@ -83,8 +84,9 @@ const isInViewport = (elem) => {
 };
 
 const scrollStop = () => {
-    Utils.stopForceScrolling = true
-    clearTimeout(Utils.scrollTimeoutId)
+  Utils.stopForceScrolling = true
+  clearTimeout(Utils.scrollTimeoutId)
+  Utils.scrollTimeoutIds.splice(Utils.scrollTimeoutIds.indexOf(Utils.scrollTimeoutId))
 }
 
 const scrollToY = (to, duration) => {
@@ -93,12 +95,18 @@ const scrollToY = (to, duration) => {
       currentTime = 0,
       increment = 20
 
+  Utils.stopForceScrolling = false
   const animateScroll = () => {   
       currentTime += increment
       const val = Math.easeInOutQuad(currentTime, start, change, duration);
       window.scroll(0, val)
-      if(currentTime < duration) {
-        Utils.scrollTimeoutId = setTimeout(animateScroll, increment)
+      if(Utils.stopForceScrolling == false && currentTime < duration) {
+        const tId = setTimeout(animateScroll, increment)
+        Utils.scrollTimeoutId = tId
+        Utils.scrollTimeoutIds.push(tId)
+        // if(Utils.scrollTimeoutIds.length > 1){
+        //   console.log('Utils - too many timeouts.', Utils.scrollTimeoutIds.length)
+        // }
       } else {
         Utils.emit('animation-complete')
       }
@@ -187,7 +195,7 @@ Utils.debounced = (delay, fn) => {
 }
 
 
-Utils = {
+Utils = Object.assign({}, Utils, {
     getOffset,
     scrollToY,
     scrollToElement,
@@ -196,6 +204,6 @@ Utils = {
     throttle,
     isInViewport,
     elementIndexesInView
-}
+})
 
 module.exports = eventify(Utils)

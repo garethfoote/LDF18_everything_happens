@@ -3,8 +3,8 @@ class PageVisible {
     this.focusCb = focusCb
     this.blurCb = blurCb
     
-    // window.onfocus = this.focusHandler.bind(this)
-    // window.onblur = this.blurHandler.bind(this)
+    window.onfocus = this.focusHandler.bind(this)
+    window.onblur = this.blurHandler.bind(this)
 
     this.focusHandler()
   }

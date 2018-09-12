@@ -16,6 +16,8 @@ if(!window.images){
   console.error("No image array available");
 }
 
+document.body.classList.add(`anim-offset-${Math.randomRange(1, 100)}`)
+
 // ARTICLES
 const articles = new Articles(750, [1000, 2500])
 // VISIBILITY
@@ -32,8 +34,8 @@ const socket = new Socket()
 socket.updateCount()
 
 articles.on('article-complete', ()=>{
-  localStorage.globalCount = Number(localStorage.globalCount)+1
-  socket.updateCount()
+  // localStorage.globalCount = Number(localStorage.globalCount)+1
+  // socket.updateCount()
   if(socket.canOutbound === true) {
     socket.send('user-event', 'article-complete')
   } 
@@ -67,7 +69,7 @@ Array.from(articles.getHTMLElements()).forEach((el, i) => {
         });
     }
     const w = Math.randomRange(600,800)
-    const h = Math.randomRange(600,800)
+    const h = Math.randomRange(500,800)
     const top = Math.randomRange(0, screen.height-h)
     const left = Math.randomRange(0, screen.width-w)
     localStorage.globalCount = Number(localStorage.globalCount)-100

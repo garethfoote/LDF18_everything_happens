@@ -7,16 +7,19 @@ class Message {
   }
 
   show(msg){
+    if(this.isShowing === true) return
     this.parent.classList.add('is-revealed')
     this.update(msg)
   }
 
   update(msg){
+    this.isShowing = true
     this.textEl.innerHTML = msg
-    // setTimeout(this.hide.bind(this), 5000)
+    setTimeout(this.hide.bind(this), Math.randomRange(4500, 5000))
   }
 
   hide(){
+    this.isShowing = false
     this.parent.classList.remove('is-revealed')
   }
 

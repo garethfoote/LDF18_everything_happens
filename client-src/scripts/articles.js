@@ -11,8 +11,14 @@ class Articles {
     eventify(this)
     this.paused = true
 
+    if(scrollDuration > intervalRange[0]){
+      console.error("articles.js - Scroll duration is longer than min duration. Matched values.")
+      scrollDuration = intervalRange[0]
+    }
+
     this.iterations = 0
     this.timeoutId = -1
+    this.timeoutIds = []
     this.elements = document.querySelectorAll('.js-article')
     this.items = []
 
@@ -41,9 +47,10 @@ class Articles {
   
   pause(){
     // console.log("pause()")
+    this.paused = true
     Utils.scrollStop()
     clearTimeout(this.timeoutId)
-    this.paused = true
+    this.timeoutIds.splice(this.timeoutIds.indexOf(this.timeoutId))
   }
 
   play(){
@@ -72,6 +79,7 @@ class Articles {
       } else {
         elIndex = Math.floor(Math.random()*this.elements.length)
         this.intervalDuration = (this.scrollDuration) + Math.randomRange(this.intervalRange[0], this.intervalRange[1])
+        console.log("scroll duration", this.scrollDuration, "min range", this.intervalRange[0])
       }
       
     // Choose random element and image
@@ -82,13 +90,24 @@ class Articles {
       if(!doNotEmit)
         this.emit('article-complete')
 
+      // For good measure
+      clearTimeout(this.timeoutId)
+      this.timeoutIds.splice(this.timeoutIds.indexOf(this.timeoutId))
+
       // Remove handler
       Utils.off('animation-complete', animationCompleteHandler)
       // Reveal image.
       this.items[elIndex] = new Article(parentEl, imageUrl)     
       // Go again.
       // console.log("This pause:", this.intervalDuration)
-      this.timeoutId = setTimeout(this.next.bind(this), this.intervalDuration) 
+      
+      
+      const tId = setTimeout(this.next.bind(this), this.intervalDuration) 
+      this.timeoutIds.push(tId)
+      if(this.timeoutIds.length > 1){
+        console.log('Articles - too many timeouts.', this.timeoutIds.length)
+      }
+      this.timeoutId = tId
     }
 
     if(isUserControlled === true){
