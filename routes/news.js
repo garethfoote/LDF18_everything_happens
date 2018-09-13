@@ -31,7 +31,6 @@ module.exports = (persist) => {
   router.get('/', (req, res, next) => {
     Promise.all([persist.getHeadlines(), persist.getUserAgents(), ...images]).then(function(values) {
       const hl = values.splice(0, 1).pop();
-      console.log(hl)
       const ua = values.splice(0, 1).pop();
       const imgs = [].concat.apply([], values);
       res.render('headlines', { chromeExt : process.env.CHROME_EXT, headlines : hl, images: imgs, userAgents : ua });
