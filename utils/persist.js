@@ -116,7 +116,7 @@ class Persist {
   async getAll(){
     
     const filter = {}
-    filter.ip = { $not: { $in: this.blacklistLCC(blacklist) } }
+    filter.ip = { $not: { $in: blacklist } }
 
     const visits = await Visitor.find(filter, (err, items) => {
       if (err) return console.error(err);
@@ -128,7 +128,7 @@ class Persist {
   async getUserAgents(){
 
     const filter = {}
-    filter.ip = { $not: { $in: this.blacklistLCC(blacklist) } }
+    filter.ip = { $not: { $in: blacklist } }
 
     const visits = await Visitor.find(filter, (err, items) => {
       if (err) return console.error(err);
