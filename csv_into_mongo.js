@@ -68,7 +68,11 @@ class Persist {
     const dbName = 'admin'
     const url = `mongodb://localhost:${process.env.MONGO_PORT}/${dbName}`
 
-    const options = { useNewUrlParser: true }
+    const options = {
+      useNewUrlParser: true,
+      server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+      replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
+    };
     if(typeof process.env.DEBUG === 'undefined') {
       options.auth = {
         user : process.env.MONGO_UN,
