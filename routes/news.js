@@ -13,8 +13,6 @@ const images = []
 //   next(); // pass control to the next handler
 // });
 
-
-
 glob("data/images/images_*.csv", {}, (er, files) => {
   files.forEach((file) => {
     var lineReader = require('readline').createInterface({

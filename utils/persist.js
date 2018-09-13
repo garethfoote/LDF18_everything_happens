@@ -17,10 +17,12 @@ let blacklist = (!process.env.IP_BLACKLIST) ? [] : process.env.IP_BLACKLIST.trim
 class Persist {
 
   constructor(app){    
+    blacklist = this.blacklistLCC(blacklist)
+
     this.connect()
     this.io = app.io
     this.initIO()
-    // console.log("Blacklisted IPs: ", blacklist)
+    console.log("Blacklisted IPs: ", blacklist)
   }
 
   initIO(){
