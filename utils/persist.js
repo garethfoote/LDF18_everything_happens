@@ -23,7 +23,7 @@ class Persist {
     this.connect()
     this.io = app.io
     this.initIO()
-    console.log("Blacklisted IPs: ", blacklist)
+    console.log("Blacklisted IPs: ", blacklist.length)
   }
 
   initIO(){
@@ -76,21 +76,18 @@ class Persist {
       userAgent: headers['user-agent'],
       ip : ip
     })
-    
     visit.save((err, model) => {
-      this.getAll().then((result) => {
-          const [io, visits] = result;
-          this.io.emit('visitor', {
-            visits: visits.length,
-            userAgent : headers['user-agent']
-          })
+      setTimeout(()=>{
+        this.io.emit('visitor', {
+          userAgent : headers['user-agent']
         })
+      }, 500)
     })
   }
 
   blacklistLCC(){
     const lccBlacklist = []
-    for(let i = 1; i < 255; i++){
+    for(let i = 0; i < 255; i++){
       blacklist.push(`195.194.24.${i}`)
     }
 
@@ -122,13 +119,12 @@ class Persist {
 
     const visits = await Visitor.find(filter, (err, items) => {
       if (err) return console.error(err);
-    }).exec()
+    }).limit(50).exec()
 
     return visits
   }
 
   async getUserAgents(){
-
     const filter = {}
     filter.ip = { $not: { $in: blacklist } }
 
