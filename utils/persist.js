@@ -39,8 +39,8 @@ class Persist {
 
     const options = {
       useNewUrlParser: true,
-      server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
-      replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
+      // server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+      // replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
     };
     if(typeof process.env.DEBUG === 'undefined') {
       options.auth = {
