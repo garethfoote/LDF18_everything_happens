@@ -19,12 +19,16 @@ class LineReader {
     init(){
       const instream = fs.createReadStream(this.file)
       const outstream = new stream
+
       this.rl = readline.createInterface(instream, outstream)
       this.rl.pause()
+
       if(_debug)
       console.log('init')
     }
-  
+
+
+    
     next() {
       return new Promise((resolve, reject) => {
         let data = []
@@ -32,7 +36,7 @@ class LineReader {
         let pauseLine = 0
 
         this.rl.resume()
-
+        // this.rl.off
         this.rl.on('line', (line) => {
           if(currentLine >= 50){
             this.rl.pause()

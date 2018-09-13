@@ -6,6 +6,12 @@ var visitorSchema = new mongoose.Schema({
 }, { timestamps: { createdAt: 'createdAt' }})
 var Visitor = mongoose.model('Visitor', visitorSchema)
 
+var headlineSchema = new mongoose.Schema({
+  headline: String,
+}, { timestamps: { createdAt: 'createdAt' }})
+var Headline = mongoose.model('Headline', headlineSchema)
+
+
 let blacklist = (!process.env.IP_BLACKLIST) ? [] : process.env.IP_BLACKLIST.trim().split(',')
 
 class Persist {
@@ -31,7 +37,11 @@ class Persist {
     const dbName = 'admin'
     const url = `mongodb://localhost:${process.env.MONGO_PORT}/${dbName}`
 
-    const options = { useNewUrlParser: true }
+    const options = {
+      useNewUrlParser: true,
+      server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+      replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
+    };
     if(typeof process.env.DEBUG === 'undefined') {
       options.auth = {
         user : process.env.MONGO_UN,
@@ -44,7 +54,7 @@ class Persist {
     db.on('error', console.error.bind(console, 'connection error:'));
     db.once('open', function() {
       // we're connected!
-      // console.log("Connected successfully to server")
+      console.log("Connected successfully to server")
     });
   }
 
@@ -75,10 +85,36 @@ class Persist {
     })
   }
 
+  blacklistLCC(blacklist){
+    for(let i = 1; i < 255; i++){
+      blacklist.push(`195.194.24.${i}`)
+    }
+
+    return blacklist
+  }
+
+  async getHeadlines(t){
+    let total = t || 50
+    const headlines = await Headline.aggregate([{
+      $sample: { size: total },
+    }, {
+      $group: {
+        _id: "$_id",
+        document: { $push: "$$ROOT" }
+      }
+    }, {
+      $limit: total
+    }, {
+      $unwind: "$document"
+    }]).exec()
+
+    return headlines
+  }
+
   async getAll(){
     
     const filter = {}
-    filter.ip = { $not: { $in: blacklist } }
+    filter.ip = { $not: { $in: this.blacklistLCC(blacklist) } }
 
     const visits = await Visitor.find(filter, (err, items) => {
       if (err) return console.error(err);
@@ -90,7 +126,7 @@ class Persist {
   async getUserAgents(){
 
     const filter = {}
-    filter.ip = { $not: { $in: blacklist } }
+    filter.ip = { $not: { $in: this.blacklistLCC(blacklist) } }
 
     const visits = await Visitor.find(filter, (err, items) => {
       if (err) return console.error(err);

@@ -13,17 +13,25 @@ const images = []
 //   next(); // pass control to the next handler
 // });
 
+
+
 glob("data/images/images_*.csv", {}, (er, files) => {
   files.forEach((file) => {
-    images.push(new LineReader(file).next())
+    var lineReader = require('readline').createInterface({
+      input: require('fs').createReadStream(file)
+    })
+    lineReader.on('line', (line) => {
+      images.push(line)
+    })
   })
 })
 
 module.exports = (persist) => {
 
   router.get('/', (req, res, next) => {
-    Promise.all([headlines.next(), persist.getUserAgents(), ...images]).then(function(values) {
+    Promise.all([persist.getHeadlines(), persist.getUserAgents(), ...images]).then(function(values) {
       const hl = values.splice(0, 1).pop();
+      console.log(hl)
       const ua = values.splice(0, 1).pop();
       const imgs = [].concat.apply([], values);
       res.render('headlines', { chromeExt : process.env.CHROME_EXT, headlines : hl, images: imgs, userAgents : ua });

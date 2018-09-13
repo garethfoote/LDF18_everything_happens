@@ -10,14 +10,14 @@ const _ = require('lodash')
 const httpAuth = require('http-auth')
 
 const Persist = require('./utils/persist')
-const Visitors = require('./utils/visitors')
+// const Visitors = require('./utils/visitors')
+// const visitors = new Visitors(app)
 
 const app = express()
 const io  = app.io = require( "socket.io" )()
 _.extend(app.locals, require('./config'))
 
 const persist = new Persist(app)
-const visitors = new Visitors(app)
 
 const userAgentRouter = require('./routes/userAgent')(persist)
 const startRouter = require('./routes/start')
