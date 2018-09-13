@@ -3,7 +3,7 @@ const router = express.Router()
 const glob = require('glob')
 
 const LineReader = require('../data/LineReader.js')
-const headlines = new LineReader('data/headlines/headline_data.csv', true);
+// const headlines = new LineReader('data/headlines/headline_data.csv', true);
 const images = []
 
 // EXAMPLE: Setting layout for this whole route.
