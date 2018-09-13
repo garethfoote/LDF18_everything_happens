@@ -17,7 +17,8 @@ let blacklist = (!process.env.IP_BLACKLIST) ? [] : process.env.IP_BLACKLIST.trim
 class Persist {
 
   constructor(app){    
-    blacklist = this.blacklistLCC(blacklist)
+    const lccBlacklist = this.blacklistLCC()
+    blacklist = [...lccBlacklist, ...blacklist]
 
     this.connect()
     this.io = app.io
@@ -87,12 +88,13 @@ class Persist {
     })
   }
 
-  blacklistLCC(blacklist){
+  blacklistLCC(){
+    const lccBlacklist = []
     for(let i = 1; i < 255; i++){
       blacklist.push(`195.194.24.${i}`)
     }
 
-    return blacklist
+    return lccBlacklist
   }
 
   async getHeadlines(t){
